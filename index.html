@@ -1556,7 +1556,10 @@
       return { personas:[], asignaciones:[], adminPass:'admin123', tareas: null };
     }
 
+    let _lastWriteTime = 0;
+
     function saveState() {
+      _lastWriteTime = Date.now();
       STATE_DOC.set({ personas, asignaciones, adminPass, tareas })
         .catch(e => console.error('Firestore write error:', e));
     }
@@ -2663,10 +2666,11 @@
       loadingEl.remove();
       initApp();
 
-      // Escuchar cambios en tiempo real (ignorar el primer disparo = datos ya cargados)
+      // Escuchar cambios en tiempo real (ignorar arranque y ecos de nuestras propias escrituras)
       let primerDisparo = true;
       STATE_DOC.onSnapshot((snap) => {
         if (primerDisparo) { primerDisparo = false; return; }
+        if (Date.now() - _lastWriteTime < 3000) return; // eco de saveState propio
         if (!snap.exists) return;
         const d = snap.data();
         personas     = d.personas     || [];
