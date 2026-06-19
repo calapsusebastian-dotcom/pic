@@ -2862,10 +2862,7 @@
           ? `<span class="bc-badge bc-badge-pending">🔵 Próximo</span>`
           : `<span class="bc-badge bc-badge-done">✅ Completado</span>`;
 
-        const MAX = 3;
-        const shown  = display.slice(0, MAX);
-        const extras = display.length - MAX;
-        const personsHtml = shown.map(a => {
+        const personsHtml = display.map(a => {
           const p = personas.find(x => x.id === a.personaId);
           if (!p) return '';
           return `<div class="bc-person">
@@ -2889,7 +2886,6 @@
             ${badge}
             <div class="bc-persons">
               ${personsHtml}
-              ${extras > 0 ? `<div class="bc-more">+${extras} más</div>` : ''}
             </div>
             <div class="bc-time">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
