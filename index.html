@@ -119,6 +119,18 @@
       box-shadow: 0 8px 24px rgba(124,58,237,0.5);
     }
 
+    .login-board-btn {
+      width: 100%; background: transparent; color: #7C3AED;
+      border: 1.5px solid rgba(124,58,237,0.3); border-radius: var(--rs);
+      padding: 10px; font-family: 'DM Sans', sans-serif; font-size: 12px;
+      font-weight: 600; cursor: pointer; margin-top: 10px;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      transition: all 0.15s; letter-spacing: 0.2px;
+    }
+    .login-board-btn:hover {
+      background: rgba(124,58,237,0.07); border-color: #7C3AED;
+    }
+
     .login-footer {
       margin-top: 20px; text-align: center;
       font-size: 10px; color: var(--text-3); letter-spacing: 0.3px;
@@ -1358,6 +1370,10 @@
         <input class="login-input" id="loginPass" type="password" placeholder="••••••••"
                autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" style="margin-bottom:6px;">
         <button class="login-btn" onclick="doLogin()">Ingresar</button>
+        <button class="login-board-btn" onclick="showTableroView()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Ver Tablero (TV)
+        </button>
         <div class="login-footer">TaskFlow · Café © 2026</div>
       </div>
     </div>
@@ -2775,6 +2791,7 @@
         try {
           const sess = JSON.parse(stored);
           if (sess.type === 'admin') { currentSession = sess; showAdminView(); return; }
+          if (sess.type === 'tablero') { currentSession = sess; showTableroView(); return; }
           if (sess.type === 'employee') {
             const p = personas.find(x => x.id === sess.personaId);
             if (p) { currentSession = sess; showEmployeeView(p.id); return; }
@@ -2789,7 +2806,19 @@
       renderBoard();
     }
 
+    function showTableroView() {
+      currentSession = { type: 'tablero' };
+      sessionStorage.setItem('tf_session', JSON.stringify(currentSession));
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('adminApp').classList.remove('active');
+      document.getElementById('employeeApp').classList.remove('active');
+      document.getElementById('boardView').classList.add('show');
+      renderBoard();
+      document.getElementById('boardView').requestFullscreen().catch(()=>{});
+    }
+
     function closeBoard() {
+      if (currentSession?.type === 'tablero') { doLogout(); return; }
       document.getElementById('boardView').classList.remove('show');
       if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
     }
