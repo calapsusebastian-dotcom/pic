@@ -2645,18 +2645,8 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    setInterval(() => {
-      if (currentSession?.type === 'admin') {
-        const enHistorial = document.getElementById('tabHistorial')?.classList.contains('active');
-        if (enHistorial) renderHistorial(); else renderAll();
-      } else if (currentSession?.type === 'employee') {
-        renderEmployeeApp(currentSession.personaId);
-      }
-    }, 30000);
-
-    // Carga desde Firestore antes de mostrar la app
+    // Carga inicial + escucha en tiempo real
     (async () => {
-      const loginScreen = document.getElementById('loginScreen');
       const loadingEl = document.createElement('div');
       loadingEl.id = 'fb-loading';
       loadingEl.style.cssText = 'position:fixed;inset:0;background:#09090B;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:12px;';
@@ -2664,14 +2654,34 @@
       document.body.appendChild(loadingEl);
 
       const state = await loadState();
-      personas     = state.personas    || [];
+      personas     = state.personas     || [];
       asignaciones = state.asignaciones || [];
-      adminPass    = state.adminPass   || 'admin123';
+      adminPass    = state.adminPass    || 'admin123';
       tareas       = state.tareas;
       if (!tareas || !tareas.length) tareas = DEFAULT_TAREAS.map(t => ({...t}));
 
       loadingEl.remove();
       initApp();
+
+      // Escuchar cambios en tiempo real (ignorar el primer disparo = datos ya cargados)
+      let primerDisparo = true;
+      STATE_DOC.onSnapshot((snap) => {
+        if (primerDisparo) { primerDisparo = false; return; }
+        if (!snap.exists) return;
+        const d = snap.data();
+        personas     = d.personas     || [];
+        asignaciones = d.asignaciones || [];
+        adminPass    = d.adminPass    || 'admin123';
+        tareas       = d.tareas;
+        if (!tareas || !tareas.length) tareas = DEFAULT_TAREAS.map(t => ({...t}));
+
+        if (currentSession?.type === 'admin') {
+          const enHistorial = document.getElementById('tabHistorial')?.classList.contains('active');
+          if (enHistorial) renderHistorial(); else renderAll();
+        } else if (currentSession?.type === 'employee') {
+          renderEmployeeApp(currentSession.personaId);
+        }
+      });
     })();
   </script>
 </body>
