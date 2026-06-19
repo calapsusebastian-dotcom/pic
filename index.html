@@ -1,0 +1,2678 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow — Café</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #F1F5F9;
+      --surface:  #FFFFFF;
+      --border:   #E2E8F0;
+      --text:     #0F172A;
+      --text-2:   #64748B;
+      --text-3:   #94A3B8;
+      --sidebar:  #0F172A;
+      --accent:   #7C3AED;
+      --green:    #16A34A;
+      --amber:    #D97706;
+      --blue:     #2563EB;
+      --red:      #DC2626;
+      --r:        14px;
+      --rs:       9px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ══ LOGIN ═════════════════════════════════════════════════ */
+    #loginScreen {
+      width: 100%; height: 100vh;
+      background: #09090B;
+      background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(124,58,237,0.15) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 20%, rgba(37,99,235,0.1) 0%, transparent 50%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+    }
+
+    #loginScreen.hidden { display: none; }
+
+    .login-card {
+      background: white; border-radius: 20px;
+      width: 400px; max-width: calc(100vw - 32px);
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
+    }
+
+    .login-header {
+      background: linear-gradient(135deg, #1E1B4B 0%, #312E81 60%, #4C1D95 100%);
+      padding: 32px 32px 28px;
+      position: relative; overflow: hidden;
+    }
+
+    .login-header::before {
+      content: ''; position: absolute;
+      width: 220px; height: 220px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(167,139,250,0.25) 0%, transparent 70%);
+      bottom: -80px; right: -60px; pointer-events: none;
+    }
+
+    .login-header::after {
+      content: ''; position: absolute;
+      width: 120px; height: 120px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%);
+      top: -30px; left: -30px; pointer-events: none;
+    }
+
+    .login-logo {
+      font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; color: white;
+      margin-bottom: 4px; letter-spacing: -0.5px; position: relative; z-index: 1;
+    }
+
+    .login-logo span { color: #A78BFA; }
+
+    .login-subtitle {
+      font-size: 11px; color: rgba(167,139,250,0.5);
+      letter-spacing: 0.8px; text-transform: uppercase;
+      font-weight: 600; position: relative; z-index: 1;
+    }
+
+    .login-body { padding: 28px 32px 32px; }
+
+    .login-label {
+      display: block; font-size: 11px; font-weight: 600;
+      color: var(--text); margin-bottom: 5px; letter-spacing: 0.2px;
+    }
+
+    .login-input {
+      width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--rs); padding: 11px 13px;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text);
+      outline: none; transition: all 0.15s; margin-bottom: 14px; display: block;
+    }
+
+    .login-input:focus {
+      border-color: var(--accent); background: white;
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+    }
+
+    .login-btn {
+      width: 100%; background: var(--accent); color: white; border: none;
+      border-radius: var(--rs); padding: 12px;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: all 0.15s; margin-top: 4px;
+      box-shadow: 0 4px 16px rgba(124,58,237,0.4);
+      letter-spacing: 0.3px;
+    }
+
+    .login-btn:hover {
+      background: #6D28D9; transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(124,58,237,0.5);
+    }
+
+    .login-footer {
+      margin-top: 20px; text-align: center;
+      font-size: 10px; color: var(--text-3); letter-spacing: 0.3px;
+    }
+
+    .login-error {
+      background: #FEF2F2; border: 1px solid #FCA5A5; color: var(--red);
+      font-size: 12px; border-radius: var(--rs); padding: 8px 12px;
+      margin-bottom: 14px; display: none;
+    }
+
+    /* ══ ADMIN APP ═════════════════════════════════════════════ */
+    #adminApp { display: none; width: 100%; height: 100vh; }
+    #adminApp.active { display: flex; }
+
+    /* ══ EMPLOYEE APP ══════════════════════════════════════════ */
+    #employeeApp { display: none; width: 100%; height: 100vh; flex-direction: column; }
+    #employeeApp.active { display: flex; }
+
+    .emp-topbar {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px; display: flex; align-items: center;
+      justify-content: space-between; gap: 12px; flex-shrink: 0;
+      box-shadow: 0 1px 4px rgba(15,23,42,0.04);
+      position: relative; z-index: 10;
+    }
+
+    .emp-brand { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--text); }
+    .emp-brand span { color: var(--accent); }
+
+    .emp-user-pill { display: flex; align-items: center; gap: 9px; }
+
+    .emp-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; color: white; flex-shrink: 0;
+    }
+
+    .emp-name { font-size: 13px; font-weight: 600; }
+
+    .emp-logout {
+      background: none; border: 1px solid var(--border); color: var(--text-2);
+      font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
+      padding: 5px 11px; border-radius: var(--rs); cursor: pointer;
+      transition: all 0.13s; display: flex; align-items: center; gap: 5px;
+    }
+
+    .emp-logout:hover { background: #FEF2F2; color: var(--red); border-color: #FCA5A5; }
+
+    .emp-content {
+      flex: 1; overflow-y: auto; padding: 22px 20px;
+      background: var(--bg);
+    }
+
+    .emp-greeting { font-size: 11px; color: var(--text-3); margin-bottom: 2px; }
+
+    .emp-date-title {
+      font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .emp-date-sub { font-size: 12px; color: var(--text-2); margin-bottom: 20px; text-transform: capitalize; }
+
+    .emp-task-card {
+      background: white; border: 1px solid var(--border);
+      border-left: 4px solid #E2E8F0;
+      border-radius: var(--r); padding: 16px 16px 14px;
+      margin-bottom: 10px; position: relative; overflow: hidden;
+      transition: box-shadow 0.15s, transform 0.13s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .emp-task-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); transform: translateY(-1px); }
+    .emp-task-card.en-curso  { border-left-color: var(--amber); }
+    .emp-task-card.pendiente { border-left-color: var(--blue); }
+    .emp-task-card.terminada { border-left-color: #22C55E; opacity: 0.8; }
+
+    .emp-tc-stripe { display: none; }
+
+    .emp-tc-top { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+
+    .emp-tc-icon { font-size: 22px; flex-shrink: 0; }
+
+    .emp-tc-name {
+      font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; flex: 1;
+    }
+
+    .emp-tc-time {
+      font-size: 12px; color: var(--text-2);
+      display: flex; align-items: center; gap: 4px; margin-bottom: 8px;
+    }
+
+    .emp-tc-progress { height: 6px; background: #EDE9E2; border-radius: 3px; overflow: hidden; margin-bottom: 5px; }
+    .emp-tc-progress-fill { height: 100%; border-radius: 3px; transition: width 1s linear; }
+    .emp-tc-remaining { font-size: 11px; color: var(--amber); font-weight: 700; }
+
+    .emp-empty {
+      text-align: center; padding: 48px 0; color: var(--text-3);
+    }
+
+    .emp-empty-icon { font-size: 38px; margin-bottom: 10px; }
+    .emp-empty-text { font-size: 13px; }
+
+    .emp-section-label {
+      font-size: 9px; font-weight: 700; letter-spacing: 1.3px;
+      text-transform: uppercase; color: var(--text-3);
+      margin: 18px 0 8px;
+    }
+
+    .emp-section-label:first-child { margin-top: 0; }
+
+    /* ══ TABS DE VISTA ════════════════════════════════════════ */
+    .view-tabs {
+      display: flex; gap: 2px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 3px; flex-shrink: 0;
+    }
+
+    .view-tab {
+      background: none; border: none;
+      font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+      color: var(--text-2); padding: 5px 13px; border-radius: 6px;
+      cursor: pointer; transition: all 0.13s;
+    }
+
+    .view-tab.active {
+      background: white; color: var(--text); font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .view-tab:hover:not(.active) { color: var(--text); background: rgba(0,0,0,0.04); }
+
+    /* ══ HISTORIAL ══════════════════════════════════════════════ */
+    #historialArea {
+      flex: 1; overflow-y: auto; padding: 18px;
+      background: var(--bg);
+    }
+
+    .hist-filter-bar {
+      display: flex; align-items: center; gap: 8px;
+      background: white; border: 1px solid var(--border);
+      border-radius: var(--r); padding: 10px 14px;
+      margin-bottom: 14px; flex-wrap: wrap;
+    }
+
+    .hist-select, .hist-date-input {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--rs); padding: 6px 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 12px;
+      color: var(--text); outline: none; cursor: pointer;
+      transition: border-color 0.13s;
+    }
+
+    .hist-select:focus, .hist-date-input:focus {
+      border-color: var(--accent); box-shadow: 0 0 0 2px rgba(124,58,237,0.08);
+    }
+
+    .hist-date-range { display: flex; align-items: center; gap: 6px; }
+
+    .hist-clear-btn {
+      background: none; border: 1px solid var(--border);
+      color: var(--text-2); font-family: 'DM Sans', sans-serif;
+      font-size: 11px; padding: 5px 10px; border-radius: var(--rs);
+      cursor: pointer; transition: all 0.12s;
+    }
+
+    .hist-clear-btn:hover { background: #FEF2F2; color: var(--red); border-color: #FCA5A5; }
+
+    .hist-summary {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 16px; font-size: 12px; color: var(--text-2);
+    }
+
+    .hist-summary strong { color: var(--text); font-weight: 700; }
+    .hist-stat-sep { color: var(--border); font-size: 14px; }
+
+    .hist-day-group { margin-bottom: 16px; }
+
+    .hist-day-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .hist-day-label {
+      font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+      text-transform: capitalize;
+    }
+
+    .hist-day-total {
+      font-size: 11px; font-weight: 700; color: var(--accent);
+      background: #EDE9FE; padding: 3px 10px; border-radius: 20px;
+    }
+
+    .hist-day-rows {
+      background: white; border: 1.5px solid var(--border);
+      border-radius: var(--r); overflow: hidden;
+    }
+
+    .hist-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-bottom: 1px solid var(--border);
+      transition: background 0.12s;
+    }
+
+    .hist-row:last-child { border-bottom: none; }
+    .hist-row:hover { background: var(--bg); }
+    .hist-row.hist-row-active { background: linear-gradient(135deg,#FFFDF5,#FFF8E1); }
+
+    .hist-row-av {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 800; color: white;
+    }
+
+    .hist-row-person { font-size: 12px; font-weight: 600; width: 100px; flex-shrink: 0; }
+
+    .hist-row-task {
+      flex: 1; font-size: 12px; color: var(--text-2);
+      display: flex; align-items: center; gap: 5px; min-width: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .hist-task-icon { font-size: 14px; flex-shrink: 0; }
+
+    .hist-row-time {
+      font-size: 11px; color: var(--text-3);
+      flex-shrink: 0; width: 108px; text-align: right;
+    }
+
+    .hist-duration {
+      font-size: 12px; font-weight: 700; color: var(--text);
+      flex-shrink: 0; width: 52px; text-align: right;
+    }
+
+    .hist-badge {
+      font-size: 10px; font-weight: 600;
+      padding: 2px 7px; border-radius: 20px; flex-shrink: 0;
+    }
+
+    .hist-badge-done    { background: #F5F5F5; color: #999; }
+    .hist-badge-curso   { background: linear-gradient(135deg,#FFFBEB,#FEF3C7); color: #D97706; border:1px solid rgba(217,119,6,0.18); }
+    .hist-badge-pending { background: linear-gradient(135deg,#EFF6FF,#DBEAFE); color: #2563EB; border:1px solid rgba(37,99,235,0.18); }
+
+    .hist-empty {
+      text-align: center; padding: 52px; color: var(--text-3); font-size: 13px;
+    }
+
+    .hist-group-toggle {
+      display: flex; gap: 2px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 7px; padding: 3px; flex-shrink: 0;
+    }
+
+    .hist-gtab {
+      background: none; border: none;
+      font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
+      color: var(--text-2); padding: 4px 12px; border-radius: 5px;
+      cursor: pointer; transition: all 0.13s;
+    }
+
+    .hist-gtab.active {
+      background: white; color: var(--text); font-weight: 700;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .hist-gtab:hover:not(.active) { color: var(--text); }
+
+    .hist-task-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 8px; padding: 10px 14px;
+      background: white; border: 1.5px solid var(--border);
+      border-bottom: none;
+      border-radius: var(--r) var(--r) 0 0;
+    }
+
+    .hist-task-header-icon { font-size: 24px; flex-shrink: 0; }
+
+    .hist-task-header-info { flex: 1; }
+
+    .hist-task-header-name {
+      font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+    }
+
+    .hist-task-header-sub { font-size: 11px; color: var(--text-2); margin-top: 1px; }
+
+    .hist-task-header-total {
+      font-size: 13px; font-weight: 700; color: var(--accent);
+      background: #EDE9FE; padding: 4px 12px; border-radius: 20px; flex-shrink: 0;
+    }
+
+    .hist-row-date {
+      font-size: 11px; color: var(--text-3); flex-shrink: 0; width: 72px;
+    }
+
+    /* Logout admin button in topbar */
+    .admin-logout {
+      background: none; border: 1px solid var(--border); color: var(--text-2);
+      font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
+      padding: 5px 11px; border-radius: var(--rs); cursor: pointer;
+      transition: all 0.13s; display: flex; align-items: center; gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .admin-logout:hover { background: #FEF2F2; color: var(--red); border-color: #FCA5A5; }
+
+    /* ══ SIDEBAR ══════════════════════════════════════════════ */
+    #sidebar {
+      width: 260px; min-width: 260px;
+      background: linear-gradient(180deg, #0F172A 0%, #0B1220 100%);
+      border-right: 1px solid #1E293B;
+      display: flex; flex-direction: column;
+      height: 100vh; overflow: hidden;
+    }
+
+    .sb-brand {
+      padding: 20px 16px 14px;
+      border-bottom: 1px solid #1E293B;
+    }
+
+    .brand {
+      font-family: 'Syne', sans-serif;
+      font-size: 21px; font-weight: 800; color: #F8FAFC;
+    }
+
+    .brand span { color: #A78BFA; }
+
+    .brand-sub {
+      font-size: 10px; color: #334155;
+      margin-top: 4px; letter-spacing: 0.5px;
+    }
+
+    .sb-clock {
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid #1E293B;
+    }
+
+    .clock-time {
+      font-family: 'Syne', sans-serif;
+      font-size: 36px; font-weight: 700;
+      color: #E2E8F0; letter-spacing: -1.5px;
+      line-height: 1;
+    }
+
+    .clock-date {
+      font-size: 11px; color: #475569;
+      margin-top: 4px; text-transform: capitalize;
+    }
+
+    /* ══ CARPETA PERSONAL ═════════════════════════════════════ */
+    .p-folder-wrap {
+      flex: 1; min-height: 0;
+      display: flex; flex-direction: column;
+      padding: 6px 8px 8px;
+    }
+
+    .p-folder-tab {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #1E293B;
+      border: 1px solid #334155; border-bottom: none;
+      border-radius: 7px 7px 0 0;
+      padding: 6px 14px;
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 1.2px; text-transform: uppercase;
+      color: #475569; align-self: flex-start;
+    }
+
+    .p-folder-body {
+      flex: 1; min-height: 0;
+      background: #0B1220;
+      border: 1px solid #1E293B;
+      border-radius: 0 8px 8px 8px;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+
+    #peopleList {
+      flex: 1; overflow-y: auto; padding: 6px 6px 4px;
+    }
+
+    #peopleList::-webkit-scrollbar { width: 2px; }
+    #peopleList::-webkit-scrollbar-thumb { background: #1E293B; }
+
+    .p-folder-foot {
+      padding: 6px 6px 7px;
+      border-top: 1px solid #1E293B;
+      flex-shrink: 0;
+    }
+
+    .p-card {
+      display: flex; align-items: center; gap: 9px;
+      padding: 8px 9px;
+      border-radius: var(--rs);
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-bottom: 2px;
+      border-left: 2.5px solid transparent;
+    }
+
+    .p-card:last-child { margin-bottom: 0; }
+    .p-card:hover { background: #1E293B; }
+
+    .p-av {
+      width: 34px; height: 34px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; color: #FFF;
+      flex-shrink: 0; position: relative;
+    }
+
+    .p-status-dot {
+      position: absolute; bottom: 0; right: 0;
+      width: 9px; height: 9px; border-radius: 50%;
+      border: 1.5px solid #0B1220;
+    }
+
+    .p-info { flex: 1; min-width: 0; }
+
+    .p-name {
+      font-size: 12px; font-weight: 600; color: #CBD5E1;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .p-task-info {
+      font-size: 10px; color: #475569;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+
+    .p-task-info.busy { color: #F59E0B; }
+    .p-task-info.free { color: #475569; }
+
+    .btn-add-p {
+      width: 100%;
+      background: transparent; border: 1px dashed #1E293B;
+      color: #475569; font-family: 'DM Sans', sans-serif;
+      font-size: 11px; padding: 8px; border-radius: var(--rs);
+      cursor: pointer; display: flex; align-items: center;
+      justify-content: center; gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .btn-add-p:hover { background: #1E293B; color: #94A3B8; border-color: #334155; }
+
+    /* ══ MAIN ══════════════════════════════════════════════════ */
+    #main {
+      flex: 1; display: flex; flex-direction: column;
+      overflow: hidden; min-width: 0;
+    }
+
+    #topbar {
+      padding: 11px 20px;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 12px;
+      box-shadow: 0 1px 4px rgba(15,23,42,0.04);
+      position: relative; z-index: 10;
+    }
+
+    .page-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px; font-weight: 700;
+      letter-spacing: -0.3px; flex-shrink: 0;
+    }
+
+    #statsRow {
+      display: flex; align-items: center; gap: 6px; flex: 1; padding-left: 14px;
+    }
+
+    .stat-pill {
+      display: flex; align-items: center; gap: 5px;
+      background: white; border: 1px solid var(--border);
+      border-radius: 20px; padding: 4px 12px;
+      font-size: 11px; color: var(--text-2); white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .stat-pill strong { color: var(--text); font-weight: 700; }
+
+    /* ══ TASK GRID ═════════════════════════════════════════════ */
+    #gridArea {
+      flex: 1; overflow-y: auto; padding: 18px;
+      background: var(--bg);
+    }
+
+    #taskGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: none; }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(217,119,6,0.5); }
+      50%       { box-shadow: 0 0 0 4px rgba(217,119,6,0); }
+    }
+
+    .task-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid #E2E8F0;
+      border-radius: var(--r);
+      padding: 16px 14px 13px;
+      cursor: pointer;
+      transition: box-shadow 0.18s, transform 0.14s, border-left-color 0.18s;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+      animation: cardIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .task-card:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.06);
+      transform: translateY(-2px);
+    }
+
+    .task-card.st-en-curso  { border-left-color: var(--amber); }
+    .task-card.st-pendiente { border-left-color: var(--blue); }
+    .task-card.st-terminada { border-left-color: #22C55E; opacity: 0.85; }
+
+    .task-card.st-en-curso:hover  { box-shadow: 0 4px 20px rgba(217,119,6,0.14), 0 1px 3px rgba(0,0,0,0.06); }
+    .task-card.st-pendiente:hover { box-shadow: 0 4px 20px rgba(37,99,235,0.12), 0 1px 3px rgba(0,0,0,0.06); }
+    .task-card.st-terminada:hover { box-shadow: 0 4px 20px rgba(34,197,94,0.12), 0 1px 3px rgba(0,0,0,0.06); }
+
+    /* Botón editar tarea en tarjeta */
+    .tc-edit-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: none; border: none; color: var(--text-3);
+      cursor: pointer; padding: 4px; border-radius: 5px;
+      opacity: 0; transition: all 0.12s;
+      display: flex; align-items: center;
+      z-index: 1;
+    }
+    .task-card:hover .tc-edit-btn { opacity: 1; }
+    .tc-edit-btn:hover { background: var(--bg); color: var(--accent); }
+
+    /* Tarjeta de añadir actividad */
+    .task-card-add {
+      background: transparent;
+      border: 2px dashed var(--border);
+      border-radius: var(--r);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      cursor: pointer; min-height: 130px;
+      color: var(--text-3); font-size: 12px; font-weight: 500;
+      gap: 8px; transition: all 0.18s;
+      animation: cardIn 0.35s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    .task-card-add:hover {
+      border-color: var(--accent); color: var(--accent);
+      background: rgba(124,58,237,0.03);
+    }
+    .task-card-add-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--bg); border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; transition: all 0.18s;
+    }
+    .task-card-add:hover .task-card-add-icon {
+      background: rgba(124,58,237,0.08); border-color: var(--accent);
+    }
+
+    /* Modal de actividad — emoji picker */
+    .icon-picker-row {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;
+    }
+    .icon-opt {
+      width: 32px; height: 32px; border-radius: 7px;
+      background: var(--bg); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; cursor: pointer; transition: all 0.12s;
+      user-select: none;
+    }
+    .icon-opt:hover { background: #EDE9FE; border-color: var(--accent); transform: scale(1.1); }
+
+    .tc-progress-fill.shimmer {
+      background: linear-gradient(90deg, var(--amber), #F59E0B, var(--amber)) !important;
+      background-size: 200% 100% !important;
+      animation: progressShimmer 2s linear infinite;
+    }
+
+    @keyframes progressShimmer {
+      0%   { background-position: 200% center; }
+      100% { background-position: -200% center; }
+    }
+
+    /* Status bar top */
+    .tc-top {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 9px;
+    }
+
+    .tc-icon {
+      font-size: 20px; line-height: 1; flex-shrink: 0;
+    }
+
+    .tc-name {
+      font-size: 13px; font-weight: 700;
+      line-height: 1.2; flex: 1;
+    }
+
+    /* Status badge */
+    .tc-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10px; font-weight: 600;
+      padding: 3px 8px; border-radius: 20px;
+      margin-bottom: 9px;
+    }
+
+    .badge-libre     { background: linear-gradient(135deg, #F0FDF4, #DCFCE7); color: #16A34A; border: 1px solid rgba(22,163,74,0.18); }
+    .badge-en-curso  { background: linear-gradient(135deg, #FFFBEB, #FEF3C7); color: #D97706; border: 1px solid rgba(217,119,6,0.18); }
+    .badge-pendiente { background: linear-gradient(135deg, #EFF6FF, #DBEAFE); color: #2563EB; border: 1px solid rgba(37,99,235,0.18); }
+    .badge-terminada { background: linear-gradient(135deg, #F9F9F9, #EFEFEF); color: #999;    border: 1px solid rgba(0,0,0,0.07); }
+
+    /* Assignee info inside card */
+    .tc-person {
+      display: flex; align-items: center; gap: 7px;
+      margin-bottom: 6px;
+    }
+
+    .tc-av {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 800; color: white; flex-shrink: 0;
+    }
+
+    .tc-pname { font-size: 12px; font-weight: 600; color: var(--text); }
+
+    .tc-time {
+      font-size: 11px; color: var(--text-2);
+      display: flex; align-items: center; gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    /* Progress bar */
+    .tc-progress {
+      height: 5px; background: #EDE9E2;
+      border-radius: 3px; overflow: hidden; margin-bottom: 6px;
+    }
+
+    .tc-progress-fill {
+      height: 100%; border-radius: 3px;
+      transition: width 1s linear;
+    }
+
+    .tc-remaining {
+      font-size: 10px; color: var(--amber); font-weight: 600;
+    }
+
+    .tc-assign-btn {
+      width: 100%; background: var(--bg);
+      border: 1px dashed var(--border);
+      color: var(--text-3); font-family: 'DM Sans', sans-serif;
+      font-size: 11px; padding: 8px; border-radius: var(--rs);
+      cursor: pointer; transition: all 0.13s;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+
+    .tc-assign-btn:hover { background: #EDE9FE; color: var(--accent); border-color: var(--accent); }
+
+    /* ══ MODAL ═════════════════════════════════════════════════ */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.18s;
+      padding: 16px;
+    }
+
+    .overlay.show { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--surface); border-radius: 14px;
+      width: 460px; max-width: 100%; max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 28px 70px rgba(0,0,0,0.22), 0 1px 0 rgba(255,255,255,0.6) inset;
+      transform: translateY(14px) scale(0.97);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .overlay.show .modal { transform: translateY(0) scale(1); }
+
+    .modal-head {
+      padding: 16px 20px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; background: var(--surface); z-index: 1;
+      border-radius: 14px 14px 0 0;
+    }
+
+    .modal-icon { font-size: 22px; margin-right: 8px; }
+
+    .modal-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px; font-weight: 700; flex: 1;
+    }
+
+    .modal-x {
+      background: none; border: none; color: var(--text-3);
+      cursor: pointer; padding: 5px; border-radius: 6px;
+      display: flex; transition: all 0.12s;
+    }
+
+    .modal-x:hover { background: var(--bg); color: var(--text); }
+
+    .modal-body { padding: 16px 20px; }
+
+    .modal-foot {
+      padding: 13px 20px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+    }
+
+    /* Today's assignments list in modal */
+    .asig-list { margin-bottom: 16px; }
+
+    .asig-list-title {
+      font-size: 10px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--text-3); margin-bottom: 8px;
+    }
+
+    .asig-empty {
+      font-size: 12px; color: var(--text-3);
+      padding: 8px 0; font-style: italic;
+    }
+
+    .asig-row {
+      display: flex; align-items: center; gap: 9px;
+      padding: 8px 10px; border-radius: var(--rs);
+      border: 1px solid var(--border);
+      margin-bottom: 6px; background: var(--bg);
+    }
+
+    .asig-row-av {
+      width: 26px; height: 26px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 800; color: white; flex-shrink: 0;
+    }
+
+    .asig-row-info { flex: 1; min-width: 0; }
+    .asig-row-name { font-size: 12px; font-weight: 600; }
+    .asig-row-time { font-size: 11px; color: var(--text-2); }
+
+    .asig-row-status {
+      font-size: 10px; font-weight: 600;
+      padding: 2px 7px; border-radius: 5px; flex-shrink: 0;
+    }
+
+    .asig-row-del {
+      background: none; border: none; color: #CCC;
+      cursor: pointer; padding: 2px; border-radius: 4px;
+      display: flex; transition: all 0.1s; flex-shrink: 0;
+    }
+
+    .asig-row-del:hover { color: var(--red); background: #FEF2F2; }
+
+    .asig-row-edit {
+      background: none; border: none; color: #BBB;
+      cursor: pointer; padding: 2px; border-radius: 4px;
+      display: flex; transition: all 0.1s; flex-shrink: 0;
+    }
+
+    .asig-row-edit:hover { color: var(--accent); background: #EDE9FE; }
+
+    .asig-row.editing {
+      border-color: var(--accent);
+      background: #F5F3FF;
+    }
+
+    .edit-banner {
+      display: flex; align-items: center; gap: 6px;
+      background: #EDE9FE; border: 1px solid rgba(124,58,237,0.25);
+      border-radius: var(--rs); padding: 7px 10px;
+      font-size: 11px; font-weight: 600; color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    /* Divider */
+    .divider {
+      border: none; border-top: 1px solid var(--border);
+      margin: 14px 0;
+    }
+
+    .new-asig-title {
+      font-size: 10px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--text-3); margin-bottom: 10px;
+    }
+
+    /* Form */
+    .fg { margin-bottom: 12px; }
+    .fg label {
+      display: block; font-size: 11px; font-weight: 600;
+      color: var(--text); margin-bottom: 5px;
+    }
+
+    .fg input, .fg select {
+      width: 100%; background: var(--bg);
+      border: 1px solid var(--border); border-radius: var(--rs);
+      padding: 8px 11px; font-family: 'DM Sans', sans-serif;
+      font-size: 13px; color: var(--text);
+      outline: none; transition: border-color 0.13s, background 0.13s, box-shadow 0.13s;
+    }
+
+    .fg input:focus, .fg select:focus {
+      border-color: var(--accent); background: white;
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.09);
+    }
+
+    .fg textarea {
+      width: 100%; background: var(--bg);
+      border: 1px solid var(--border); border-radius: var(--rs);
+      padding: 8px 11px; font-family: 'DM Sans', sans-serif;
+      font-size: 13px; color: var(--text); line-height: 1.5;
+      outline: none; resize: vertical; min-height: 68px;
+      transition: border-color 0.13s, background 0.13s, box-shadow 0.13s;
+    }
+
+    .fg textarea:focus {
+      border-color: var(--accent); background: white;
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.09);
+    }
+
+    .fg textarea::placeholder { color: var(--text-3); }
+
+    /* Detalle en tarjeta de tarea */
+    .tc-detalle {
+      font-size: 11px; color: var(--text-2); line-height: 1.5;
+      margin-bottom: 7px; margin-top: -2px;
+      padding: 5px 8px;
+      background: var(--bg); border-radius: 6px;
+      border-left: 2px solid var(--border);
+      display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    /* Detalle en modal persona-tareas */
+    .pt-task-detalle {
+      font-size: 11px; color: var(--text-2); line-height: 1.5;
+      margin-top: 5px; padding: 5px 8px;
+      background: var(--bg); border-radius: 5px;
+      border-left: 2px solid var(--border);
+    }
+
+    /* Detalle en vista empleado */
+    .emp-tc-detalle {
+      font-size: 12px; color: var(--text-2); line-height: 1.55;
+      margin-bottom: 9px; padding: 7px 10px;
+      background: var(--bg); border-radius: var(--rs);
+      border-left: 3px solid var(--accent);
+    }
+
+    /* Detalle en lista de asignaciones del modal */
+    .asig-row-detalle {
+      font-size: 11px; color: var(--text-2);
+      margin-top: 2px; font-style: italic;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .fg-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    /* Person selector grid */
+    .person-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 7px; margin-bottom: 12px;
+    }
+
+    .pg-opt {
+      border: 1.5px solid var(--border); border-radius: var(--rs);
+      padding: 8px 6px; text-align: center;
+      cursor: pointer; transition: all 0.13s; position: relative;
+    }
+
+    .pg-opt:hover:not(.disabled) { border-color: var(--accent); background: #FAFAFA; }
+    .pg-opt.sel { border-color: var(--accent); background: #EDE9FE; }
+    .pg-opt.disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .pg-av {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; color: white;
+      margin: 0 auto 4px; position: relative;
+    }
+
+    .pg-dot {
+      position: absolute; bottom: 0; right: 0;
+      width: 9px; height: 9px; border-radius: 50%;
+      border: 1.5px solid white;
+    }
+
+    .pg-name {
+      font-size: 10px; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .pg-status {
+      font-size: 9px; color: var(--text-3); margin-top: 1px;
+    }
+
+    .pg-status.busy { color: var(--amber); }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px; font-weight: 600;
+      padding: 8px 15px; border-radius: var(--rs);
+      border: none; cursor: pointer; transition: all 0.14s;
+    }
+
+    .btn-primary {
+      background: var(--accent); color: white;
+      box-shadow: 0 2px 10px rgba(124,58,237,0.35);
+    }
+    .btn-primary:hover {
+      background: #6D28D9;
+      box-shadow: 0 4px 16px rgba(124,58,237,0.45);
+      transform: translateY(-1px);
+    }
+    .btn-ghost { background: transparent; color: var(--text-2); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--bg); }
+
+    /* Person modal */
+    .color-row { display: flex; gap: 7px; flex-wrap: wrap; }
+
+    .c-dot {
+      width: 26px; height: 26px; border-radius: 50%;
+      cursor: pointer; border: 2px solid transparent; transition: all 0.13s;
+    }
+
+    .c-dot:hover { transform: scale(1.12); }
+    .c-dot.sel { border-color: white; box-shadow: 0 0 0 2.5px var(--text); }
+
+    /* ══ MODAL TAREAS DE PERSONA ══════════════════════════════ */
+    .pt-head-av {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: white;
+      flex-shrink: 0; margin-right: 10px;
+    }
+
+    .pt-task-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 12px; border-radius: var(--rs);
+      border: 1px solid var(--border); margin-bottom: 8px;
+      background: var(--bg); transition: border-color 0.13s;
+    }
+
+    .pt-task-row:last-child { margin-bottom: 0; }
+
+    .pt-task-row.status-en-curso {
+      background: linear-gradient(135deg, #FFFDF5, #FFF8E1);
+      border-color: rgba(217,119,6,0.22);
+    }
+
+    .pt-task-icon { font-size: 20px; flex-shrink: 0; }
+
+    .pt-task-info { flex: 1; min-width: 0; }
+
+    .pt-task-name { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+
+    .pt-task-time {
+      font-size: 11px; color: var(--text-2);
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    .pt-task-bar {
+      height: 4px; background: #EDE9E2; border-radius: 2px;
+      overflow: hidden; margin-top: 6px;
+    }
+
+    .pt-task-bar-fill { height: 100%; border-radius: 2px; }
+
+    .pt-empty {
+      text-align: center; padding: 28px 0; color: var(--text-3);
+    }
+
+    .pt-empty-icon { font-size: 32px; margin-bottom: 8px; }
+
+    .pt-empty-text { font-size: 12px; }
+
+    .pt-section-title {
+      font-size: 10px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--text-3);
+      margin-bottom: 10px; margin-top: 16px;
+    }
+
+    .pt-section-title:first-child { margin-top: 0; }
+
+    /* Sidebar edit button on hover */
+    .p-edit-btn {
+      background: none; border: none; color: #334155;
+      cursor: pointer; padding: 4px; border-radius: 4px;
+      display: flex; opacity: 0; transition: all 0.12s; flex-shrink: 0;
+    }
+
+    .p-card:hover .p-edit-btn { opacity: 1; }
+    .p-edit-btn:hover { color: #A78BFA; background: #1E293B; }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 22px; right: 22px;
+      background: #111; color: white;
+      padding: 10px 16px; border-radius: 10px; font-size: 13px;
+      z-index: 9999; transform: translateY(80px);
+      transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+      border-left: 3px solid var(--accent);
+      pointer-events: none;
+    }
+
+    #toast.show { transform: translateY(0); }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #DDD; border-radius: 2px; }
+
+    /* ══ RESPONSIVE ════════════════════════════════════════════ */
+    .sidebar-toggle {
+      display: none;
+      background: none; border: none; color: var(--text-2);
+      cursor: pointer; padding: 7px; border-radius: var(--rs);
+      transition: all 0.13s; flex-shrink: 0;
+      align-items: center; justify-content: center;
+    }
+    .sidebar-toggle:hover { background: var(--bg); color: var(--text); }
+
+    .sidebar-backdrop {
+      display: none; position: fixed; inset: 0;
+      background: rgba(15,23,42,0.55);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      z-index: 98;
+    }
+    .sidebar-backdrop.show { display: block; }
+
+    @media (max-width: 900px) {
+      .sidebar-toggle { display: flex; }
+
+      #sidebar {
+        position: fixed; top: 0; bottom: 0; left: -270px;
+        z-index: 99;
+        transition: left 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                    box-shadow 0.28s;
+      }
+      #sidebar.open {
+        left: 0;
+        box-shadow: 12px 0 48px rgba(0,0,0,0.5);
+      }
+
+      #statsRow { display: none !important; }
+    }
+
+    @media (max-width: 640px) {
+      #taskGrid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 10px;
+      }
+      #gridArea, #historialArea { padding: 12px; }
+
+      .hist-filter-bar { flex-direction: column; align-items: stretch; gap: 6px; }
+      .hist-group-toggle { align-self: flex-start; }
+      .hist-select { width: 100%; }
+      .hist-date-range { flex-direction: column; align-items: stretch; }
+      .hist-date-input { width: 100%; }
+      .hist-date-range span { display: none; }
+
+      .login-header { padding: 24px 22px 20px; }
+      .login-body { padding: 20px 22px 24px; }
+      .login-logo { font-size: 24px; }
+
+      .overlay { padding: 10px; align-items: flex-end; }
+      .modal {
+        border-radius: 16px 16px 0 0; max-height: 90vh;
+        width: 100%; max-width: 100%;
+      }
+      .modal-head { border-radius: 16px 16px 0 0; }
+
+      .emp-content { padding: 14px; }
+      .emp-task-card { padding: 13px 13px 11px; }
+
+      .topbar-stat-pills { display: none; }
+    }
+
+    @media (max-width: 420px) {
+      #taskGrid { grid-template-columns: 1fr 1fr; gap: 8px; }
+
+      .task-card { padding: 13px 11px 11px; }
+      .tc-name { font-size: 12px; }
+
+      .view-tab { padding: 4px 10px; font-size: 11px; }
+      .admin-logout .logout-label { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Backdrop para sidebar móvil -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+  <!-- ══ LOGIN ════════════════════════════════════════════════ -->
+  <div id="loginScreen">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo">Task<span>Flow</span></div>
+        <div class="login-subtitle">☕ Gestión de Tareas · Café</div>
+      </div>
+      <div class="login-body">
+        <div id="loginError" class="login-error"></div>
+        <label class="login-label">Usuario</label>
+        <input class="login-input" id="loginUser" type="text" placeholder="usuario"
+               autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()">
+        <label class="login-label">Contraseña</label>
+        <input class="login-input" id="loginPass" type="password" placeholder="••••••••"
+               autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" style="margin-bottom:6px;">
+        <button class="login-btn" onclick="doLogin()">Ingresar</button>
+        <div class="login-footer">TaskFlow · Café © 2026</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ADMIN APP ════════════════════════════════════════════ -->
+  <div id="adminApp">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+      <div class="sb-brand">
+        <div class="brand">Task<span>Flow</span></div>
+        <div class="brand-sub">☕ Gestión de tareas · Café</div>
+      </div>
+
+      <div class="sb-clock">
+        <div class="clock-time" id="clockTime">--:--:--</div>
+        <div class="clock-date" id="clockDate"></div>
+      </div>
+
+      <div class="p-folder-wrap">
+        <div class="p-folder-tab">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          Personal
+        </div>
+        <div class="p-folder-body">
+          <div id="peopleList"></div>
+          <div class="p-folder-foot">
+            <button class="btn-add-p" onclick="openPersonModal()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+              Agregar persona
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div id="main">
+      <div id="topbar">
+        <button class="sidebar-toggle" onclick="openSidebar()" title="Menú">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <div class="view-tabs">
+          <button class="view-tab active" id="tabTareas" onclick="switchView('tasks')">☕ Tareas</button>
+          <button class="view-tab" id="tabHistorial" onclick="switchView('historial')">📋 Historial</button>
+        </div>
+        <div id="statsRow"></div>
+        <button class="admin-logout" onclick="doLogout()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span class="logout-label">Salir</span>
+        </button>
+      </div>
+
+      <div id="gridArea">
+        <div id="taskGrid"></div>
+      </div>
+
+      <div id="historialArea" style="display:none;">
+        <div id="histFilterBar"></div>
+        <div id="histSummary"></div>
+        <div id="histContent"></div>
+      </div>
+    </div>
+
+  </div><!-- /#adminApp -->
+
+  <!-- ══ EMPLOYEE APP ════════════════════════════════════════ -->
+  <div id="employeeApp">
+    <div class="emp-topbar">
+      <div class="emp-brand">Task<span>Flow</span></div>
+      <div class="emp-user-pill">
+        <div class="emp-avatar" id="empAvatar"></div>
+        <span class="emp-name" id="empName"></span>
+        <button class="emp-logout" onclick="doLogout()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+    <div class="emp-content">
+      <div class="emp-greeting" id="empGreeting"></div>
+      <div class="emp-date-title" id="empDateTitle"></div>
+      <div class="emp-date-sub" id="empDateSub"></div>
+      <div id="empTaskList"></div>
+    </div>
+  </div>
+
+  <!-- ══ MODAL: ASIGNAR TAREA ════════════════════════════════ -->
+  <div class="overlay" id="overlayAsig">
+    <div class="modal">
+      <div class="modal-head">
+        <span class="modal-icon" id="mAsigIcon"></span>
+        <div class="modal-title" id="mAsigTitle"></div>
+        <button class="modal-x" onclick="closeOverlay('overlayAsig')">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Asignaciones de hoy -->
+        <div class="asig-list">
+          <div class="asig-list-title">Asignaciones de hoy</div>
+          <div id="asigListHoy"></div>
+        </div>
+
+        <hr class="divider">
+        <div class="new-asig-title">Nueva asignación</div>
+
+        <!-- Selector de persona -->
+        <div class="fg">
+          <label>Seleccionar persona(s) <span id="pgSelCount" style="color:var(--accent);font-weight:700;"></span></label>
+          <div class="person-grid" id="personGrid"></div>
+        </div>
+
+        <!-- Horas -->
+        <div class="fg fg-row2">
+          <div>
+            <label>Desde</label>
+            <input type="time" id="horaInicio">
+          </div>
+          <div>
+            <label>Hasta</label>
+            <input type="time" id="horaFin">
+          </div>
+        </div>
+
+        <!-- Fecha -->
+        <div class="fg">
+          <label>Fecha</label>
+          <input type="date" id="asigFecha">
+        </div>
+
+        <!-- Detalle -->
+        <div class="fg">
+          <label>Detalle / instrucciones <span style="color:var(--text-3);font-weight:400;">(opcional)</span></label>
+          <textarea id="asigDetalle" placeholder="Ej: Revisar filtros, limpiar tuberías del sector 2…"></textarea>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" id="btnCancelEdit" onclick="cancelEdit()" style="display:none; color:var(--accent); border-color:rgba(124,58,237,0.3);">× Cancelar edición</button>
+        <button class="btn btn-ghost" onclick="closeOverlay('overlayAsig')">Cancelar</button>
+        <button class="btn btn-primary" id="btnGuardarAsig" onclick="guardarAsig()">Asignar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MODAL: PERSONA ══════════════════════════════════════ -->
+  <div class="overlay" id="overlayPerson">
+    <div class="modal" style="max-width:380px;">
+      <div class="modal-head">
+        <div class="modal-title" id="mPersonTitle">Agregar persona</div>
+        <button class="modal-x" onclick="closeOverlay('overlayPerson')">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="pId">
+        <div class="fg">
+          <label>Nombre completo *</label>
+          <input type="text" id="pName" placeholder="Ej: Carlos Ramírez">
+        </div>
+        <div class="fg-row2 fg">
+          <div>
+            <label>Usuario *</label>
+            <input type="text" id="pUsername" placeholder="carlos.r" autocomplete="off">
+          </div>
+          <div>
+            <label id="pPasswordLabel">Contraseña *</label>
+            <input type="password" id="pPassword" placeholder="••••••••" autocomplete="new-password">
+          </div>
+        </div>
+        <div class="fg">
+          <label>Color</label>
+          <div class="color-row" id="colorPicker"></div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" id="btnDelPerson" onclick="deletePerson()" style="display:none; margin-right:auto; color:var(--red); border-color:#FCA5A5;">Eliminar</button>
+        <button class="btn btn-ghost" onclick="closeOverlay('overlayPerson')">Cancelar</button>
+        <button class="btn btn-primary" onclick="savePerson()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MODAL: TAREAS DE PERSONA ════════════════════════════ -->
+  <div class="overlay" id="overlayPersonTasks">
+    <div class="modal" style="max-width:410px;">
+      <div class="modal-head">
+        <div class="pt-head-av" id="ptAvatar"></div>
+        <div style="flex:1;min-width:0;">
+          <div class="modal-title" id="ptName"></div>
+          <div id="ptStatusText" style="font-size:11px;color:var(--text-2);margin-top:2px;"></div>
+        </div>
+        <button class="btn btn-ghost" onclick="editCurrentPerson()" style="padding:5px 11px;font-size:11px;flex-shrink:0;margin-right:6px;">✏️ Editar</button>
+        <button class="modal-x" onclick="closeOverlay('overlayPersonTasks')">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="ptTaskList"></div>
+    </div>
+  </div>
+
+  <!-- ══ MODAL: ACTIVIDAD ════════════════════════════════════ -->
+  <div class="overlay" id="overlayTarea">
+    <div class="modal" style="max-width:380px;">
+      <div class="modal-head">
+        <div class="modal-title" id="mTareaTitle">Nueva actividad</div>
+        <button class="modal-x" onclick="closeOverlay('overlayTarea')">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="tId">
+        <div class="fg">
+          <label>Ícono</label>
+          <input type="text" id="tIcon" placeholder="📋" maxlength="4" style="font-size:20px;text-align:center;width:60px;">
+          <div class="icon-picker-row" style="margin-top:8px;">
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">⚙️</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">🌾</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">📦</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">🚚</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">☕</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">🔄</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">⚖️</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">🔧</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">🏷️</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">🧹</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">🔨</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">💨</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">🔥</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">📋</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">🌿</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">🏭</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">🪣</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">🧪</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">📊</span>
+            <span class="icon-opt" onclick="document.getElementById('tIcon').value=this.textContent">🚜</span>
+          </div>
+        </div>
+        <div class="fg" style="margin-top:4px;">
+          <label>Nombre *</label>
+          <input type="text" id="tNombre" placeholder="Ej: Empaque" onkeydown="if(event.key==='Enter')saveTarea()">
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" id="btnDelTarea" onclick="deleteTarea()"
+                style="display:none;margin-right:auto;color:var(--red);border-color:#FCA5A5;">Eliminar</button>
+        <button class="btn btn-ghost" onclick="closeOverlay('overlayTarea')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveTarea()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // ══ FIREBASE ════════════════════════════════════════════════
+    firebase.initializeApp({
+      apiKey:            "AIzaSyDk-VFv9q53LCGK1QEtsY-peUiC1xNchjY",
+      authDomain:        "tareaspic.firebaseapp.com",
+      projectId:         "tareaspic",
+      storageBucket:     "tareaspic.firebasestorage.app",
+      messagingSenderId: "858583735303",
+      appId:             "1:858583735303:web:cc483d0376d7f1c08edea2"
+    });
+    const db       = firebase.firestore();
+    const STATE_DOC = db.collection('taskflow').doc('state');
+
+    // ══ TAREAS POR DEFECTO ══════════════════════════════════════
+    const DEFAULT_TAREAS = [
+      { id:'trilla',         nombre:'Trilla',           icon:'⚙️' },
+      { id:'pretrillas',     nombre:'Pretrillas',       icon:'🌾' },
+      { id:'descargue',      nombre:'Descargue',        icon:'📦' },
+      { id:'cargue',         nombre:'Cargue',           icon:'🚚' },
+      { id:'recoger_cafe',   nombre:'Recoger Café',     icon:'☕' },
+      { id:'maquesina',      nombre:'Maquesina',        icon:'🔄' },
+      { id:'calibrar_cafe',  nombre:'Calibrar Café',    icon:'⚖️' },
+      { id:'rayar_maquesina',nombre:'Rayar Maquesina',  icon:'🔧' },
+      { id:'marcar_costales',nombre:'Marcar Costales',  icon:'🏷️' },
+      { id:'limpieza',       nombre:'Limpieza',         icon:'🧹' },
+      { id:'mantenimiento',  nombre:'Mantenimiento',    icon:'🔨' },
+      { id:'secado_mecanico',nombre:'Secado Mecánico',  icon:'💨' },
+      { id:'tostadora',      nombre:'Tostadora',        icon:'🔥' },
+    ];
+
+    const PALETTE = [
+      '#7C3AED','#2563EB','#EA580C','#16A34A',
+      '#DB2777','#D97706','#0891B2','#DC2626',
+      '#65A30D','#0D9488'
+    ];
+
+    // ══ ESTADO ══════════════════════════════════════════════════
+    let personas    = [];
+    let asignaciones = [];
+    let adminPass   = 'admin123';
+    let tareas      = null;
+
+    async function loadState() {
+      try {
+        const snap = await STATE_DOC.get();
+        if (snap.exists) return snap.data();
+      } catch(e) { console.error('Firestore read error:', e); }
+      return { personas:[], asignaciones:[], adminPass:'admin123', tareas: null };
+    }
+
+    function saveState() {
+      STATE_DOC.set({ personas, asignaciones, adminPass, tareas })
+        .catch(e => console.error('Firestore write error:', e));
+    }
+    let nextId = Date.now();
+    function uid() { return 'id_' + (nextId++); }
+
+    // Tarea actualmente seleccionada en modal
+    let modalTareaId   = null;
+    let selPersonIds   = new Set();
+    let editAsigId     = null;
+    let currentSession = null;
+
+    // ══ TIEMPO ══════════════════════════════════════════════════
+    function nowMin() {
+      const n = new Date();
+      return n.getHours() * 60 + n.getMinutes();
+    }
+
+    function toMin(t) {
+      if (!t) return 0;
+      const [h,m] = t.split(':').map(Number);
+      return h * 60 + m;
+    }
+
+    function todayStr() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    function asigStatus(a) {
+      const now = nowMin();
+      const s = toMin(a.horaInicio);
+      const e = toMin(a.horaFin);
+      if (now < s)            return 'pendiente';
+      if (now >= s && now < e) return 'en-curso';
+      return 'terminada';
+    }
+
+    // Para una tarea: dame la asignación de hoy más relevante
+    function getActiveAsig(tareaId) {
+      const hoy = todayStr();
+      const now = nowMin();
+      const list = asignaciones
+        .filter(a => a.tarea === tareaId && a.fecha === hoy)
+        .sort((a,b) => toMin(a.horaInicio) - toMin(b.horaInicio));
+
+      const activa = list.find(a => {
+        const s = toMin(a.horaInicio), e = toMin(a.horaFin);
+        return now >= s && now < e;
+      });
+      if (activa) return { ...activa, _st:'en-curso' };
+
+      const proxima = list.find(a => toMin(a.horaInicio) > now);
+      if (proxima) return { ...proxima, _st:'pendiente' };
+
+      const ult = list[list.length-1];
+      if (ult) return { ...ult, _st:'terminada' };
+      return null;
+    }
+
+    // ¿Está ocupada la persona en este momento?
+    function personaBusy(personaId) {
+      const now = nowMin(), hoy = todayStr();
+      return asignaciones.some(a =>
+        a.personaId === personaId &&
+        a.fecha === hoy &&
+        now >= toMin(a.horaInicio) &&
+        now < toMin(a.horaFin)
+      );
+    }
+
+    function personaCurTask(personaId) {
+      const now = nowMin(), hoy = todayStr();
+      return asignaciones.find(a =>
+        a.personaId === personaId &&
+        a.fecha === hoy &&
+        now >= toMin(a.horaInicio) &&
+        now < toMin(a.horaFin)
+      );
+    }
+
+    // Tiempo restante formateado
+    function timeRemaining(horaFin) {
+      const diff = toMin(horaFin) - nowMin();
+      if (diff <= 0) return null;
+      const h = Math.floor(diff/60), m = diff%60;
+      if (h > 0) return `${h}h ${m}m restantes`;
+      return `${m} min restantes`;
+    }
+
+    function progressPct(horaInicio, horaFin) {
+      const now = nowMin();
+      const s = toMin(horaInicio), e = toMin(horaFin);
+      const total = e - s;
+      if (total <= 0) return 100;
+      return Math.min(Math.max(((now-s)/total)*100, 0), 100);
+    }
+
+    function fmt(t) {
+      if (!t) return '';
+      const [h,m] = t.split(':');
+      return `${h}:${m}`;
+    }
+
+    // ══ CLOCK ═══════════════════════════════════════════════════
+    function updateClock() {
+      const n = new Date();
+      const hh = String(n.getHours()).padStart(2,'0');
+      const mm = String(n.getMinutes()).padStart(2,'0');
+      const ss = String(n.getSeconds()).padStart(2,'0');
+      document.getElementById('clockTime').textContent = `${hh}:${mm}:${ss}`;
+      document.getElementById('clockDate').textContent = n.toLocaleDateString('es-CO',{
+        weekday:'long', day:'numeric', month:'long'
+      });
+    }
+
+    // ══ COLOR PICKER ════════════════════════════════════════════
+    const picker = document.getElementById('colorPicker');
+    PALETTE.forEach((c,i) => {
+      const d = document.createElement('div');
+      d.className = 'c-dot' + (i===0?' sel':'');
+      d.style.background = c; d.dataset.c = c;
+      d.onclick = () => {
+        picker.querySelectorAll('.c-dot').forEach(x=>x.classList.remove('sel'));
+        d.classList.add('sel');
+      };
+      picker.appendChild(d);
+    });
+
+    // ══ RENDER ══════════════════════════════════════════════════
+    function renderAll() {
+      renderSidebar();
+      renderGrid();
+      renderStats();
+    }
+
+    function renderSidebar() {
+      const el = document.getElementById('peopleList');
+      if (!personas.length) {
+        el.innerHTML = '<div style="padding:20px 12px;text-align:center;color:#2E2E2E;font-size:11px;line-height:1.8;">Sin personal registrado.<br>Agrega el equipo.</div>';
+        return;
+      }
+      el.innerHTML = personas.map(p => {
+        const busy = personaBusy(p.id);
+        const ct = busy ? personaCurTask(p.id) : null;
+        const tarea = ct ? tareas.find(t => t.id === ct.tarea) : null;
+        const dotColor = busy ? '#F59E0B' : '#22C55E';
+        const hoyCount = asignaciones.filter(a => a.personaId === p.id && a.fecha === todayStr()).length;
+        return `
+          <div class="p-card" style="border-left-color:${p.color}66" onclick="openPersonTasks('${p.id}')">
+            <div class="p-av" style="background:${p.color};box-shadow:0 0 0 2px ${p.color}44,0 2px 8px ${p.color}22">
+              ${ini(p.nombre)}
+              <div class="p-status-dot" style="background:${dotColor}"></div>
+            </div>
+            <div class="p-info">
+              <div class="p-name">${esc(p.nombre)}</div>
+              ${busy
+                ? `<div class="p-task-info busy">🟠 ${esc(tarea?.nombre||'Tarea')} → ${fmt(ct.horaFin)}</div>`
+                : `<div class="p-task-info free">${hoyCount > 0 ? `🟢 ${hoyCount} tarea${hoyCount>1?'s':''} hoy` : '🟢 Disponible'}</div>`
+              }
+            </div>
+            <button class="p-edit-btn" onclick="event.stopPropagation();openPersonModal('${p.id}')" title="Editar persona">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+          </div>`;
+      }).join('');
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('taskGrid');
+      grid.innerHTML = tareas.map((t, idx) => {
+        const asig = getActiveAsig(t.id);
+        const p = asig ? personas.find(x=>x.id===asig.personaId) : null;
+        const delay = `animation-delay:${idx * 38}ms`;
+
+        if (!asig) {
+          return `
+            <div class="task-card" style="${delay}" onclick="openAsigModal('${t.id}')">
+              <button class="tc-edit-btn" onclick="event.stopPropagation();openTareaModal('${t.id}')" title="Editar actividad">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <div class="tc-top">
+                <div class="tc-icon">${t.icon}</div>
+                <div class="tc-name">${t.nombre}</div>
+              </div>
+              <span class="tc-badge badge-libre">🟢 Libre</span>
+              <button class="tc-assign-btn">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                Asignar persona
+              </button>
+            </div>`;
+        }
+
+        const st = asig._st;
+        const stClass = st==='en-curso' ? 'st-en-curso' : st==='terminada' ? 'st-terminada' : st==='pendiente' ? 'st-pendiente' : '';
+        const badge = st==='en-curso'
+          ? `<span class="tc-badge badge-en-curso">🟠 En curso</span>`
+          : st==='pendiente'
+          ? `<span class="tc-badge badge-pendiente">🔵 Próximo</span>`
+          : `<span class="tc-badge badge-terminada">✅ Terminado</span>`;
+
+        const remaining = st==='en-curso' ? timeRemaining(asig.horaFin) : null;
+        const pct = st==='en-curso' ? progressPct(asig.horaInicio, asig.horaFin) : (st==='terminada'?100:0);
+        const barColor = st==='en-curso'?'#D97706':st==='terminada'?'#22C55E':'#3B82F6';
+        const fillClass = st==='en-curso' ? ' shimmer' : '';
+
+        return `
+          <div class="task-card ${stClass}" style="${delay}" onclick="openAsigModal('${t.id}')">
+            <button class="tc-edit-btn" onclick="event.stopPropagation();openTareaModal('${t.id}')" title="Editar actividad">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <div class="tc-top">
+              <div class="tc-icon">${t.icon}</div>
+              <div class="tc-name">${t.nombre}</div>
+            </div>
+            ${badge}
+            ${asig.detalle ? `<div class="tc-detalle">${esc(asig.detalle)}</div>` : ''}
+            ${p ? `
+              <div class="tc-person">
+                <div class="tc-av" style="background:${p.color}">${ini(p.nombre)}</div>
+                <span class="tc-pname">${esc(p.nombre.split(' ')[0])}</span>
+              </div>
+            ` : ''}
+            <div class="tc-time">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              ${fmt(asig.horaInicio)} → ${fmt(asig.horaFin)}
+            </div>
+            ${st!=='pendiente'?`
+              <div class="tc-progress">
+                <div class="tc-progress-fill${fillClass}" style="width:${pct.toFixed(1)}%; background:${barColor};"></div>
+              </div>
+            `:''}
+            ${remaining ? `<div class="tc-remaining">⏱ ${remaining}</div>` : ''}
+          </div>`;
+      }).join('');
+
+      // Tarjeta "+" para añadir nueva actividad
+      grid.innerHTML += `
+        <div class="task-card-add" style="animation-delay:${tareas.length * 38}ms" onclick="openTareaModal()">
+          <div class="task-card-add-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          </div>
+          Nueva actividad
+        </div>`;
+    }
+
+    function renderStats() {
+      const hoy = todayStr();
+      const asigHoy = asignaciones.filter(a => a.fecha === hoy);
+      const enCurso = asigHoy.filter(a => asigStatus(a)==='en-curso').length;
+      const libres = personas.filter(p => !personaBusy(p.id)).length;
+      const ocupados = personas.filter(p => personaBusy(p.id)).length;
+
+      document.getElementById('statsRow').innerHTML = `
+        <div class="stat-pill">👥 <strong>${personas.length}</strong> personas</div>
+        <div class="stat-pill">🟢 <strong>${libres}</strong> libres</div>
+        <div class="stat-pill">🟠 <strong>${ocupados}</strong> ocupados</div>
+        <div class="stat-pill">⚡ <strong>${enCurso}</strong> en curso</div>`;
+    }
+
+    // ══ MODAL ASIGNAR ═══════════════════════════════════════════
+    function openAsigModal(tareaId) {
+      modalTareaId = tareaId;
+      selPersonIds = new Set();
+      editAsigId   = null;
+      const t = tareas.find(x=>x.id===tareaId);
+      document.getElementById('mAsigIcon').textContent  = t.icon;
+      document.getElementById('mAsigTitle').textContent = t.nombre;
+
+      // Hora inicio por defecto = ahora
+      const n = new Date();
+      const hh = String(n.getHours()).padStart(2,'0');
+      const mm = String(n.getMinutes()).padStart(2,'0');
+      document.getElementById('horaInicio').value = `${hh}:${mm}`;
+      document.getElementById('horaFin').value    = '';
+      document.getElementById('asigFecha').value  = todayStr();
+      document.getElementById('asigDetalle').value = '';
+
+      resetEditUI();
+      renderAsigList();
+      renderPersonGrid();
+      showOverlay('overlayAsig');
+    }
+
+    function resetEditUI() {
+      editAsigId   = null;
+      selPersonIds = new Set();
+      document.getElementById('btnGuardarAsig').textContent = 'Asignar';
+      document.getElementById('btnCancelEdit').style.display = 'none';
+      const banner = document.getElementById('editBanner');
+      if (banner) banner.remove();
+      document.querySelectorAll('.asig-row.editing').forEach(r => r.classList.remove('editing'));
+      const cnt = document.getElementById('pgSelCount');
+      if (cnt) cnt.textContent = '';
+    }
+
+    function cancelEdit() {
+      const n = new Date();
+      const hh = String(n.getHours()).padStart(2,'0');
+      const mm = String(n.getMinutes()).padStart(2,'0');
+      document.getElementById('horaInicio').value  = `${hh}:${mm}`;
+      document.getElementById('horaFin').value     = '';
+      document.getElementById('asigDetalle').value = '';
+      resetEditUI();
+      renderPersonGrid();
+    }
+
+    function renderAsigList() {
+      const hoy = document.getElementById('asigFecha').value || todayStr();
+      const list = asignaciones
+        .filter(a => a.tarea === modalTareaId && a.fecha === hoy)
+        .sort((a,b) => toMin(a.horaInicio) - toMin(b.horaInicio));
+
+      const el = document.getElementById('asigListHoy');
+      if (!list.length) {
+        el.innerHTML = '<div class="asig-empty">Sin asignaciones para esta fecha.</div>';
+        return;
+      }
+
+      el.innerHTML = list.map(a => {
+        const p = personas.find(x=>x.id===a.personaId);
+        const st = asigStatus(a);
+        const stLabel = st==='en-curso' ? '🟠 En curso' : st==='pendiente' ? '🔵 Próximo' : '✅ Terminado';
+        const stBg    = st==='en-curso' ? '#FFFBEB' : st==='pendiente' ? '#EFF6FF' : '#F5F5F5';
+        const stColor = st==='en-curso' ? '#D97706' : st==='pendiente' ? '#2563EB' : '#999';
+        const isEditing = editAsigId === a.id;
+        return `
+          <div class="asig-row${isEditing?' editing':''}" id="asigrow_${a.id}">
+            <div class="asig-row-av" style="background:${p?.color||'#999'}">${ini(p?.nombre||'?')}</div>
+            <div class="asig-row-info">
+              <div class="asig-row-name">${esc(p?.nombre||'Sin nombre')}</div>
+              <div class="asig-row-time">${fmt(a.horaInicio)} → ${fmt(a.horaFin)}</div>
+              ${a.detalle ? `<div class="asig-row-detalle">${esc(a.detalle)}</div>` : ''}
+            </div>
+            <span class="asig-row-status" style="background:${stBg};color:${stColor};">${stLabel}</span>
+            <button class="asig-row-edit" onclick="editAsig('${a.id}')" title="Editar horario">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="asig-row-del" onclick="deleteAsig('${a.id}')" title="Eliminar">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>`;
+      }).join('');
+    }
+
+    function renderPersonGrid() {
+      const g = document.getElementById('personGrid');
+      if (!personas.length) {
+        g.innerHTML = '<div style="font-size:12px;color:var(--text-3);">Agrega personas primero.</div>';
+        return;
+      }
+      const editPersonId = editAsigId ? asignaciones.find(a=>a.id===editAsigId)?.personaId : null;
+      g.innerHTML = personas.map(p => {
+        const busy     = personaBusy(p.id);
+        const sel      = selPersonIds.has(p.id);
+        const disabled = busy && !sel && p.id !== editPersonId;
+        return `
+          <div class="pg-opt ${sel?'sel':''} ${disabled?'disabled':''}"
+               onclick="${disabled?'':'pickPerson(\''+p.id+'\')'}">
+            <div class="pg-av" style="background:${p.color}">
+              ${ini(p.nombre)}
+              <div class="pg-dot" style="background:${busy?'#F59E0B':'#22C55E'}"></div>
+            </div>
+            <div class="pg-name">${esc(p.nombre.split(' ')[0])}</div>
+            <div class="pg-status ${busy?'busy':''}">${busy?'Ocupado':'Libre'}</div>
+          </div>`;
+      }).join('');
+
+      // Actualizar contador y texto del botón
+      const n   = selPersonIds.size;
+      const cnt = document.getElementById('pgSelCount');
+      if (cnt) cnt.textContent = n > 0 ? `· ${n} seleccionada${n>1?'s':''}` : '';
+      const btn = document.getElementById('btnGuardarAsig');
+      if (btn && !editAsigId) {
+        btn.textContent = n > 1 ? `Asignar (${n})` : 'Asignar';
+      }
+    }
+
+    function pickPerson(id) {
+      if (editAsigId) {
+        // En modo edición: selección simple (reemplaza)
+        selPersonIds = new Set([id]);
+      } else {
+        // En modo nuevo: toggle
+        if (selPersonIds.has(id)) selPersonIds.delete(id);
+        else selPersonIds.add(id);
+      }
+      renderPersonGrid();
+    }
+
+    function editAsig(asigId) {
+      const a = asignaciones.find(x => x.id === asigId);
+      if (!a) return;
+
+      editAsigId   = asigId;
+      selPersonIds = new Set([a.personaId]);
+      document.getElementById('horaInicio').value  = a.horaInicio;
+      document.getElementById('horaFin').value     = a.horaFin;
+      document.getElementById('asigFecha').value   = a.fecha;
+      document.getElementById('asigDetalle').value = a.detalle || '';
+
+      document.getElementById('btnGuardarAsig').textContent = '✓ Actualizar';
+      document.getElementById('btnCancelEdit').style.display = 'inline-flex';
+
+      // Banner de modo edición
+      const existing = document.getElementById('editBanner');
+      if (existing) existing.remove();
+      const banner = document.createElement('div');
+      banner.id = 'editBanner';
+      banner.className = 'edit-banner';
+      banner.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editando horario — modifica los campos y presiona Actualizar`;
+      document.querySelector('.new-asig-title').after(banner);
+
+      renderAsigList();
+      renderPersonGrid();
+
+      // Scroll al formulario
+      document.getElementById('horaInicio').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function guardarAsig() {
+      if (!selPersonIds.size) { toast('⚠️ Selecciona al menos una persona'); return; }
+      const hi      = document.getElementById('horaInicio').value;
+      const hf      = document.getElementById('horaFin').value;
+      const fecha   = document.getElementById('asigFecha').value;
+      const detalle = document.getElementById('asigDetalle').value.trim();
+      if (!hi || !hf) { toast('⚠️ Ingresa la hora de inicio y fin'); return; }
+      if (toMin(hi) >= toMin(hf)) { toast('⚠️ La hora de fin debe ser mayor a la de inicio'); return; }
+
+      if (editAsigId) {
+        // Edición: siempre una persona
+        const personaId = [...selPersonIds][0];
+        const cruce = asignaciones.find(a =>
+          a.personaId === personaId && a.fecha === fecha && a.id !== editAsigId &&
+          toMin(a.horaInicio) < toMin(hf) && toMin(a.horaFin) > toMin(hi)
+        );
+        if (cruce) {
+          const t2 = tareas.find(x=>x.id===cruce.tarea);
+          toast(`⚠️ Esta persona ya tiene "${t2?.nombre}" de ${fmt(cruce.horaInicio)} a ${fmt(cruce.horaFin)}`);
+          return;
+        }
+        const a = asignaciones.find(x => x.id === editAsigId);
+        if (a) { a.personaId = personaId; a.horaInicio = hi; a.horaFin = hf; a.fecha = fecha; a.detalle = detalle; }
+        saveState(); renderAll(); toast('✅ Asignación actualizada');
+        resetEditUI(); renderAsigList(); renderPersonGrid();
+        return;
+      }
+
+      // Asignación nueva: una por cada persona seleccionada
+      const ok = [], conflictos = [];
+      for (const personaId of selPersonIds) {
+        const cruce = asignaciones.find(a =>
+          a.personaId === personaId && a.fecha === fecha &&
+          toMin(a.horaInicio) < toMin(hf) && toMin(a.horaFin) > toMin(hi)
+        );
+        if (cruce) {
+          const p2  = personas.find(x=>x.id===personaId);
+          const t2  = tareas.find(x=>x.id===cruce.tarea);
+          conflictos.push(`${p2?.nombre?.split(' ')[0]}: ya tiene "${t2?.nombre}"`);
+        } else {
+          ok.push({ id: uid(), tarea: modalTareaId, personaId, horaInicio: hi, horaFin: hf, fecha, detalle });
+        }
+      }
+
+      if (ok.length) {
+        asignaciones.push(...ok);
+        saveState(); renderAll(); renderAsigList();
+      }
+
+      if (conflictos.length && !ok.length) {
+        toast(`⚠️ ${conflictos[0]}`);
+      } else if (conflictos.length) {
+        toast(`✅ ${ok.length} asignada${ok.length>1?'s':''} · ⚠️ ${conflictos.length} con conflicto`);
+        selPersonIds = new Set(); renderPersonGrid();
+      } else {
+        toast(`✅ ${ok.length === 1 ? 'Asignación guardada' : `${ok.length} asignaciones guardadas`}`);
+        selPersonIds = new Set(); renderPersonGrid();
+      }
+    }
+
+    function deleteAsig(id) {
+      if (!confirm('¿Eliminar esta asignación?')) return;
+      asignaciones = asignaciones.filter(a=>a.id!==id);
+      saveState();
+      renderAll();
+      renderAsigList();
+      toast('🗑 Asignación eliminada');
+    }
+
+    // ══ MODAL TAREAS DE PERSONA ══════════════════════════════════
+    let currentPersonId = null;
+
+    function openPersonTasks(personId) {
+      closeSidebar();
+      currentPersonId = personId;
+      const p = personas.find(x => x.id === personId);
+      if (!p) return;
+
+      const busy = personaBusy(p.id);
+      const hoy = todayStr();
+      const totalHoy = asignaciones.filter(a => a.personaId === personId && a.fecha === hoy).length;
+
+      const ptAv = document.getElementById('ptAvatar');
+      ptAv.style.background = p.color;
+      ptAv.textContent = ini(p.nombre);
+      document.getElementById('ptName').textContent = p.nombre;
+      document.getElementById('ptStatusText').textContent = busy
+        ? '🟠 En tarea ahora'
+        : totalHoy > 0
+        ? `🟢 Disponible · ${totalHoy} tarea${totalHoy>1?'s':''} asignada${totalHoy>1?'s':''} hoy`
+        : '🟢 Disponible · Sin tareas hoy';
+
+      renderPersonTasks(personId);
+      showOverlay('overlayPersonTasks');
+    }
+
+    function renderPersonTasks(personId) {
+      const hoy = todayStr();
+      const list = asignaciones
+        .filter(a => a.personaId === personId && a.fecha === hoy)
+        .sort((a,b) => toMin(a.horaInicio) - toMin(b.horaInicio));
+
+      const el = document.getElementById('ptTaskList');
+
+      if (!list.length) {
+        el.innerHTML = `
+          <div class="pt-empty">
+            <div class="pt-empty-icon">📋</div>
+            <div class="pt-empty-text">Sin tareas asignadas para hoy</div>
+          </div>`;
+        return;
+      }
+
+      const enCurso  = list.filter(a => asigStatus(a) === 'en-curso');
+      const proximas = list.filter(a => asigStatus(a) === 'pendiente');
+      const hechas   = list.filter(a => asigStatus(a) === 'terminada');
+
+      function renderRow(a) {
+        const t  = tareas.find(x => x.id === a.tarea);
+        const st = asigStatus(a);
+        const badge = st==='en-curso'
+          ? `<span class="tc-badge badge-en-curso" style="flex-shrink:0;">🟠 En curso</span>`
+          : st==='pendiente'
+          ? `<span class="tc-badge badge-pendiente" style="flex-shrink:0;">🔵 Próximo</span>`
+          : `<span class="tc-badge badge-terminada" style="flex-shrink:0;">✅ Listo</span>`;
+        const pct = st==='en-curso' ? progressPct(a.horaInicio, a.horaFin) : (st==='terminada' ? 100 : 0);
+        const barColor = st==='en-curso' ? '#D97706' : '#22C55E';
+        const rem = st==='en-curso' ? timeRemaining(a.horaFin) : null;
+
+        return `
+          <div class="pt-task-row ${st==='en-curso'?'status-en-curso':''}">
+            <div class="pt-task-icon">${t?.icon||'📋'}</div>
+            <div class="pt-task-info">
+              <div class="pt-task-name">${esc(t?.nombre||'Tarea')}</div>
+              <div class="pt-task-time">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                ${fmt(a.horaInicio)} → ${fmt(a.horaFin)}
+                ${rem ? `<span style="color:var(--amber);margin-left:4px;font-weight:600;">· ${rem}</span>` : ''}
+              </div>
+              ${a.detalle ? `<div class="pt-task-detalle">${esc(a.detalle)}</div>` : ''}
+              ${st !== 'pendiente' ? `
+                <div class="pt-task-bar">
+                  <div class="pt-task-bar-fill" style="width:${pct.toFixed(1)}%;background:${barColor};"></div>
+                </div>` : ''}
+            </div>
+            ${badge}
+          </div>`;
+      }
+
+      let html = '';
+      if (enCurso.length)  html += `<div class="pt-section-title">En curso ahora</div>${enCurso.map(renderRow).join('')}`;
+      if (proximas.length) html += `<div class="pt-section-title">Próximas</div>${proximas.map(renderRow).join('')}`;
+      if (hechas.length)   html += `<div class="pt-section-title">Completadas</div>${hechas.map(renderRow).join('')}`;
+
+      el.innerHTML = html;
+    }
+
+    function editCurrentPerson() {
+      closeOverlay('overlayPersonTasks');
+      openPersonModal(currentPersonId);
+    }
+
+    // ══ MODAL PERSONA ════════════════════════════════════════════
+    function openPersonModal(id) {
+      document.getElementById('pId').value       = '';
+      document.getElementById('pName').value     = '';
+      document.getElementById('pUsername').value = '';
+      document.getElementById('pPassword').value = '';
+      document.getElementById('pPasswordLabel').textContent = 'Contraseña *';
+      document.getElementById('pPassword').placeholder = '••••••••';
+      document.getElementById('mPersonTitle').textContent = 'Agregar persona';
+      document.getElementById('btnDelPerson').style.display = 'none';
+      document.querySelectorAll('.c-dot').forEach((d,i)=>d.classList.toggle('sel',i===0));
+
+      if (id) {
+        const p = personas.find(x=>x.id===id);
+        if (p) {
+          document.getElementById('pId').value       = p.id;
+          document.getElementById('pName').value     = p.nombre;
+          document.getElementById('pUsername').value = p.username || '';
+          document.getElementById('pPassword').value = '';
+          document.getElementById('pPasswordLabel').textContent = 'Contraseña (dejar vacío para no cambiar)';
+          document.getElementById('pPassword').placeholder = 'Nueva contraseña…';
+          document.getElementById('mPersonTitle').textContent = 'Editar persona';
+          document.getElementById('btnDelPerson').style.display = 'inline-flex';
+          document.querySelectorAll('.c-dot').forEach(d=>d.classList.toggle('sel',d.dataset.c===p.color));
+        }
+      }
+      showOverlay('overlayPerson');
+    }
+
+    function savePerson() {
+      const nombre   = document.getElementById('pName').value.trim();
+      const username = document.getElementById('pUsername').value.trim().toLowerCase();
+      const password = document.getElementById('pPassword').value;
+      const id       = document.getElementById('pId').value;
+      const color    = document.querySelector('.c-dot.sel')?.dataset.c || PALETTE[0];
+
+      if (!nombre)   { toast('⚠️ El nombre es obligatorio'); return; }
+      if (!username) { toast('⚠️ El usuario es obligatorio'); return; }
+      if (!id && !password) { toast('⚠️ La contraseña es obligatoria'); return; }
+
+      // Verificar usuario único
+      const duplicado = personas.find(p => p.username === username && p.id !== id);
+      if (duplicado) { toast('⚠️ Ese usuario ya está en uso'); return; }
+
+      if (id) {
+        const p = personas.find(x=>x.id===id);
+        if (p) {
+          p.nombre   = nombre;
+          p.color    = color;
+          p.username = username;
+          if (password) p.password = password;
+        }
+        toast('✅ Persona actualizada');
+      } else {
+        personas.push({ id:uid(), nombre, color, username, password });
+        toast('✅ Persona agregada');
+      }
+      saveState(); renderAll(); closeOverlay('overlayPerson');
+    }
+
+    function deletePerson() {
+      const id = document.getElementById('pId').value;
+      if (!id || !confirm('¿Eliminar esta persona?')) return;
+      personas = personas.filter(p=>p.id!==id);
+      asignaciones = asignaciones.filter(a=>a.personaId!==id);
+      saveState(); renderAll(); toast('🗑 Persona eliminada'); closeOverlay('overlayPerson');
+    }
+
+    // ══ GESTIÓN DE ACTIVIDADES ═══════════════════════════════════
+    function openTareaModal(id) {
+      document.getElementById('tId').value    = '';
+      document.getElementById('tIcon').value  = '📋';
+      document.getElementById('tNombre').value = '';
+      document.getElementById('mTareaTitle').textContent = 'Nueva actividad';
+      document.getElementById('btnDelTarea').style.display = 'none';
+
+      if (id) {
+        const t = tareas.find(x => x.id === id);
+        if (t) {
+          document.getElementById('tId').value    = t.id;
+          document.getElementById('tIcon').value  = t.icon;
+          document.getElementById('tNombre').value = t.nombre;
+          document.getElementById('mTareaTitle').textContent = 'Editar actividad';
+          document.getElementById('btnDelTarea').style.display = 'inline-flex';
+        }
+      }
+      showOverlay('overlayTarea');
+    }
+
+    function saveTarea() {
+      const id     = document.getElementById('tId').value;
+      const icon   = document.getElementById('tIcon').value.trim() || '📋';
+      const nombre = document.getElementById('tNombre').value.trim();
+      if (!nombre) { toast('⚠️ El nombre es obligatorio'); return; }
+
+      if (id) {
+        const t = tareas.find(x => x.id === id);
+        if (t) { t.icon = icon; t.nombre = nombre; }
+        toast('✅ Actividad actualizada');
+      } else {
+        tareas.push({ id: uid(), icon, nombre });
+        toast('✅ Actividad creada');
+      }
+      saveState(); renderAll(); closeOverlay('overlayTarea');
+    }
+
+    function deleteTarea() {
+      const id = document.getElementById('tId').value;
+      if (!id) return;
+      const hasAsig = asignaciones.some(a => a.tarea === id);
+      const msg = hasAsig
+        ? '⚠️ Esta actividad tiene asignaciones guardadas. ¿Eliminar de todas formas?'
+        : '¿Eliminar esta actividad?';
+      if (!confirm(msg)) return;
+      tareas       = tareas.filter(t => t.id !== id);
+      asignaciones = asignaciones.filter(a => a.tarea !== id);
+      saveState(); renderAll(); toast('🗑 Actividad eliminada'); closeOverlay('overlayTarea');
+    }
+
+    // ══ HELPERS ══════════════════════════════════════════════════
+    function showOverlay(id) { document.getElementById(id).classList.add('show'); }
+    function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
+
+    document.querySelectorAll('.overlay').forEach(o =>
+      o.addEventListener('click', e=>{ if(e.target===o) o.classList.remove('show'); })
+    );
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'), 2600);
+    }
+
+    function ini(n) {
+      if (!n) return '?';
+      return n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    }
+
+    function esc(s) {
+      if (!s) return '';
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // Actualizar fecha en modal cuando cambia
+    document.getElementById('asigFecha').addEventListener('change', () => {
+      renderAsigList();
+      renderPersonGrid();
+    });
+
+    // ══ HISTORIAL ════════════════════════════════════════════════
+    let histFilters  = { personaId: '', fechaDesde: '', fechaHasta: '' };
+    let histGroupBy  = 'tarea'; // 'tarea' | 'fecha'
+
+    function switchView(view) {
+      const gridArea = document.getElementById('gridArea');
+      const histArea = document.getElementById('historialArea');
+      const statsRow = document.getElementById('statsRow');
+      const tabT     = document.getElementById('tabTareas');
+      const tabH     = document.getElementById('tabHistorial');
+
+      if (view === 'tasks') {
+        gridArea.style.display = '';
+        histArea.style.display = 'none';
+        statsRow.style.display = '';
+        tabT.classList.add('active');
+        tabH.classList.remove('active');
+      } else {
+        gridArea.style.display = 'none';
+        histArea.style.display = '';
+        statsRow.style.display = 'none';
+        tabT.classList.remove('active');
+        tabH.classList.add('active');
+        renderHistorial();
+      }
+    }
+
+    function formatDur(min) {
+      if (min <= 0) return '—';
+      const h = Math.floor(min / 60), m = min % 60;
+      if (h > 0 && m > 0) return `${h}h ${m}m`;
+      if (h > 0) return `${h}h`;
+      return `${m}m`;
+    }
+
+    function histRow(a, showTask) {
+      const p   = personas.find(x => x.id === a.personaId);
+      const t   = tareas.find(x => x.id === a.tarea);
+      const dur = Math.max(0, toMin(a.horaFin) - toMin(a.horaInicio));
+      const st  = asigStatus(a);
+      const badge = st === 'en-curso'
+        ? `<span class="hist-badge hist-badge-curso">🟠 En curso</span>`
+        : st === 'pendiente'
+        ? `<span class="hist-badge hist-badge-pending">🔵 Pendiente</span>`
+        : `<span class="hist-badge hist-badge-done">✅ Completado</span>`;
+
+      const taskCol = showTask ? `
+        <div class="hist-row-task">
+          <span class="hist-task-icon">${t?.icon||'📋'}</span>
+          ${esc(t?.nombre||'Tarea')}
+        </div>` : '';
+
+      const dateCol = !showTask ? `
+        <div class="hist-row-date">${new Date(a.fecha+'T12:00:00').toLocaleDateString('es-CO',{day:'numeric',month:'short'})}</div>` : '';
+
+      return `
+        <div class="hist-row ${st==='en-curso'?'hist-row-active':''}">
+          <div class="hist-row-av" style="background:${p?.color||'#999'}">${ini(p?.nombre||'?')}</div>
+          <div class="hist-row-person">${esc(p?.nombre||'Sin nombre')}</div>
+          ${taskCol}${dateCol}
+          <div class="hist-row-time">${fmt(a.horaInicio)} → ${fmt(a.horaFin)}</div>
+          <div class="hist-duration">${formatDur(dur)}</div>
+          ${badge}
+        </div>`;
+    }
+
+    function renderHistorial() {
+      let list = [...asignaciones];
+      if (histFilters.personaId)  list = list.filter(a => a.personaId === histFilters.personaId);
+      if (histFilters.fechaDesde) list = list.filter(a => a.fecha >= histFilters.fechaDesde);
+      if (histFilters.fechaHasta) list = list.filter(a => a.fecha <= histFilters.fechaHasta);
+
+      list.sort((a,b) => b.fecha !== a.fecha
+        ? b.fecha.localeCompare(a.fecha)
+        : toMin(a.horaInicio) - toMin(b.horaInicio));
+
+      const hasFiltros = histFilters.personaId || histFilters.fechaDesde || histFilters.fechaHasta;
+
+      // ── Barra de filtros + toggle ──
+      document.getElementById('histFilterBar').innerHTML = `
+        <div class="hist-filter-bar">
+          <div class="hist-group-toggle">
+            <button class="hist-gtab ${histGroupBy==='tarea'?'active':''}"
+                    onclick="histGroupBy='tarea';renderHistorial()">Por tarea</button>
+            <button class="hist-gtab ${histGroupBy==='fecha'?'active':''}"
+                    onclick="histGroupBy='fecha';renderHistorial()">Por fecha</button>
+          </div>
+          <div style="width:1px;height:20px;background:var(--border);flex-shrink:0;"></div>
+          <select class="hist-select" onchange="histFilters.personaId=this.value;renderHistorial()">
+            <option value="">👤 Todos</option>
+            ${personas.map(p=>`<option value="${p.id}" ${histFilters.personaId===p.id?'selected':''}>${esc(p.nombre)}</option>`).join('')}
+          </select>
+          <div class="hist-date-range">
+            <input type="date" class="hist-date-input" value="${histFilters.fechaDesde}"
+                   onchange="histFilters.fechaDesde=this.value;renderHistorial()">
+            <span style="color:var(--text-3);font-size:12px;">→</span>
+            <input type="date" class="hist-date-input" value="${histFilters.fechaHasta}"
+                   onchange="histFilters.fechaHasta=this.value;renderHistorial()">
+          </div>
+          ${hasFiltros ? `<button class="hist-clear-btn"
+            onclick="histFilters={personaId:'',fechaDesde:'',fechaHasta:''};renderHistorial()">× Limpiar</button>` : ''}
+        </div>`;
+
+      // ── Resumen general ──
+      const totalMin = list.reduce((s,a) => s + Math.max(0, toMin(a.horaFin)-toMin(a.horaInicio)), 0);
+      const dias     = new Set(list.map(a => a.fecha)).size;
+      document.getElementById('histSummary').innerHTML = list.length ? `
+        <div class="hist-summary">
+          <span><strong>${list.length}</strong> asignacion${list.length!==1?'es':''}</span>
+          <span class="hist-stat-sep">·</span>
+          <span><strong>${formatDur(totalMin)}</strong> trabajadas</span>
+          <span class="hist-stat-sep">·</span>
+          <span><strong>${dias}</strong> día${dias!==1?'s':''}</span>
+        </div>` : '';
+
+      if (!list.length) {
+        document.getElementById('histContent').innerHTML = `
+          <div class="hist-empty">
+            <div style="font-size:36px;margin-bottom:10px;">📋</div>
+            <div>Sin asignaciones${hasFiltros?' con estos filtros':''}</div>
+          </div>`;
+        return;
+      }
+
+      // ── Render por TAREA ──
+      if (histGroupBy === 'tarea') {
+        const byTarea = {};
+        list.forEach(a => { if (!byTarea[a.tarea]) byTarea[a.tarea]=[]; byTarea[a.tarea].push(a); });
+
+        // Ordenar tareas por tiempo total descendente
+        const tareasSorted = Object.keys(byTarea).sort((a,b) => {
+          const minA = byTarea[a].reduce((s,x)=>s+Math.max(0,toMin(x.horaFin)-toMin(x.horaInicio)),0);
+          const minB = byTarea[b].reduce((s,x)=>s+Math.max(0,toMin(x.horaFin)-toMin(x.horaInicio)),0);
+          return minB - minA;
+        });
+
+        let html = '';
+        tareasSorted.forEach(tareaId => {
+          const rows   = byTarea[tareaId];
+          const t      = tareas.find(x => x.id === tareaId);
+          const tarMin = rows.reduce((s,a)=>s+Math.max(0,toMin(a.horaFin)-toMin(a.horaInicio)),0);
+          const veces  = rows.length;
+
+          html += `
+            <div class="hist-day-group">
+              <div class="hist-task-header">
+                <div class="hist-task-header-icon">${t?.icon||'📋'}</div>
+                <div class="hist-task-header-info">
+                  <div class="hist-task-header-name">${esc(t?.nombre||'Tarea')}</div>
+                  <div class="hist-task-header-sub">${veces} vez${veces!==1?'':'es'} · ${formatDur(tarMin)} en total</div>
+                </div>
+                <div class="hist-task-header-total">${formatDur(tarMin)}</div>
+              </div>
+              <div class="hist-day-rows">
+                ${rows.map(a => histRow(a, false)).join('')}
+              </div>
+            </div>`;
+        });
+        document.getElementById('histContent').innerHTML = html;
+        return;
+      }
+
+      // ── Render por FECHA ──
+      const byDate = {};
+      list.forEach(a => { if (!byDate[a.fecha]) byDate[a.fecha]=[]; byDate[a.fecha].push(a); });
+      const today = todayStr();
+      let html = '';
+
+      Object.keys(byDate).sort((a,b)=>b.localeCompare(a)).forEach(fecha => {
+        const rows    = byDate[fecha];
+        const dayMin  = rows.reduce((s,a)=>s+Math.max(0,toMin(a.horaFin)-toMin(a.horaInicio)),0);
+        const rawDate = new Date(fecha + 'T12:00:00');
+        const label   = fecha === today
+          ? 'Hoy — ' + rawDate.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'})
+          : rawDate.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});
+
+        html += `
+          <div class="hist-day-group">
+            <div class="hist-day-header">
+              <span class="hist-day-label">📅 ${label}</span>
+              <span class="hist-day-total">${formatDur(dayMin)} total del día</span>
+            </div>
+            <div class="hist-day-rows">
+              ${rows.map(a => histRow(a, true)).join('')}
+            </div>
+          </div>`;
+      });
+      document.getElementById('histContent').innerHTML = html;
+    }
+
+    // ══ SESIÓN ═══════════════════════════════════════════════════
+
+    function doLogin() {
+      const user = document.getElementById('loginUser').value.trim().toLowerCase();
+      const pass = document.getElementById('loginPass').value;
+      const errEl = document.getElementById('loginError');
+      errEl.style.display = 'none';
+
+      if (!user || !pass) {
+        errEl.textContent = 'Completa usuario y contraseña';
+        errEl.style.display = 'block'; return;
+      }
+
+      if (user === 'admin' && pass === adminPass) {
+        currentSession = { type: 'admin' };
+        sessionStorage.setItem('tf_session', JSON.stringify(currentSession));
+        showAdminView(); return;
+      }
+
+      const persona = personas.find(p =>
+        p.username && p.username.toLowerCase() === user && p.password === pass
+      );
+      if (persona) {
+        currentSession = { type: 'employee', personaId: persona.id };
+        sessionStorage.setItem('tf_session', JSON.stringify(currentSession));
+        showEmployeeView(persona.id); return;
+      }
+
+      errEl.textContent = 'Usuario o contraseña incorrectos';
+      errEl.style.display = 'block';
+      document.getElementById('loginPass').value = '';
+    }
+
+    function openSidebar() {
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('sidebarBackdrop').classList.add('show');
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarBackdrop').classList.remove('show');
+    }
+
+    function doLogout() {
+      currentSession = null;
+      sessionStorage.removeItem('tf_session');
+      closeSidebar();
+      document.getElementById('adminApp').classList.remove('active');
+      document.getElementById('employeeApp').classList.remove('active');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('loginUser').value = '';
+      document.getElementById('loginPass').value = '';
+      document.getElementById('loginError').style.display = 'none';
+    }
+
+    function showAdminView() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('employeeApp').classList.remove('active');
+      document.getElementById('adminApp').classList.add('active');
+      renderAll();
+    }
+
+    function showEmployeeView(personaId) {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('adminApp').classList.remove('active');
+      document.getElementById('employeeApp').classList.add('active');
+      renderEmployeeApp(personaId);
+    }
+
+    function renderEmployeeApp(personaId) {
+      const p = personas.find(x => x.id === personaId);
+      if (!p) { doLogout(); return; }
+
+      // Header
+      const av = document.getElementById('empAvatar');
+      av.style.background = p.color;
+      av.textContent = ini(p.nombre);
+      document.getElementById('empName').textContent = p.nombre;
+
+      // Saludo según hora
+      const h = new Date().getHours();
+      const saludo = h < 12 ? 'Buenos días' : h < 18 ? 'Buenas tardes' : 'Buenas noches';
+      document.getElementById('empGreeting').textContent = saludo + ',';
+      document.getElementById('empDateTitle').textContent = p.nombre.split(' ')[0];
+      document.getElementById('empDateSub').textContent = new Date().toLocaleDateString('es-CO', {
+        weekday:'long', day:'numeric', month:'long'
+      });
+
+      // Tareas
+      const hoy = todayStr();
+      const list = asignaciones
+        .filter(a => a.personaId === personaId && a.fecha === hoy)
+        .sort((a,b) => toMin(a.horaInicio) - toMin(b.horaInicio));
+
+      const el = document.getElementById('empTaskList');
+
+      if (!list.length) {
+        el.innerHTML = `
+          <div class="emp-empty">
+            <div class="emp-empty-icon">📋</div>
+            <div class="emp-empty-text">No tienes tareas asignadas para hoy</div>
+          </div>`;
+        return;
+      }
+
+      const enCurso  = list.filter(a => asigStatus(a) === 'en-curso');
+      const proximas = list.filter(a => asigStatus(a) === 'pendiente');
+      const hechas   = list.filter(a => asigStatus(a) === 'terminada');
+
+      function renderEmpRow(a) {
+        const t = tareas.find(x => x.id === a.tarea);
+        const st = asigStatus(a);
+        const stripeColor = st==='en-curso' ? '#D97706' : st==='pendiente' ? '#2563EB' : '#CCC';
+        const badge = st==='en-curso'
+          ? `<span class="tc-badge badge-en-curso">🟠 En curso</span>`
+          : st==='pendiente'
+          ? `<span class="tc-badge badge-pendiente">🔵 Próximo</span>`
+          : `<span class="tc-badge badge-terminada">✅ Completado</span>`;
+        const pct = st==='en-curso' ? progressPct(a.horaInicio, a.horaFin) : (st==='terminada' ? 100 : 0);
+        const barColor = st==='en-curso' ? '#D97706' : '#22C55E';
+        const rem = st==='en-curso' ? timeRemaining(a.horaFin) : null;
+
+        return `
+          <div class="emp-task-card ${st}">
+            <div class="emp-tc-stripe" style="background:${stripeColor};"></div>
+            <div class="emp-tc-top">
+              <div class="emp-tc-icon">${t?.icon||'📋'}</div>
+              <div class="emp-tc-name">${esc(t?.nombre||'Tarea')}</div>
+              ${badge}
+            </div>
+            <div class="emp-tc-time">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              ${fmt(a.horaInicio)} → ${fmt(a.horaFin)}
+            </div>
+            ${a.detalle ? `<div class="emp-tc-detalle">${esc(a.detalle)}</div>` : ''}
+            ${st !== 'pendiente' ? `
+              <div class="emp-tc-progress">
+                <div class="emp-tc-progress-fill" style="width:${pct.toFixed(1)}%;background:${barColor};"></div>
+              </div>` : ''}
+            ${rem ? `<div class="emp-tc-remaining">⏱ ${rem}</div>` : ''}
+          </div>`;
+      }
+
+      let html = '';
+      if (enCurso.length)  html += `<div class="emp-section-label">En curso ahora</div>${enCurso.map(renderEmpRow).join('')}`;
+      if (proximas.length) html += `<div class="emp-section-label">Próximas</div>${proximas.map(renderEmpRow).join('')}`;
+      if (hechas.length)   html += `<div class="emp-section-label">Completadas</div>${hechas.map(renderEmpRow).join('')}`;
+      el.innerHTML = html;
+    }
+
+    function initApp() {
+      const stored = sessionStorage.getItem('tf_session');
+      if (stored) {
+        try {
+          const sess = JSON.parse(stored);
+          if (sess.type === 'admin') { currentSession = sess; showAdminView(); return; }
+          if (sess.type === 'employee') {
+            const p = personas.find(x => x.id === sess.personaId);
+            if (p) { currentSession = sess; showEmployeeView(p.id); return; }
+          }
+        } catch(e) {}
+      }
+    }
+
+    // ══ ARRANQUE Y TICKER ════════════════════════════════════════
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    setInterval(() => {
+      if (currentSession?.type === 'admin') {
+        const enHistorial = document.getElementById('tabHistorial')?.classList.contains('active');
+        if (enHistorial) renderHistorial(); else renderAll();
+      } else if (currentSession?.type === 'employee') {
+        renderEmployeeApp(currentSession.personaId);
+      }
+    }, 30000);
+
+    // Carga desde Firestore antes de mostrar la app
+    (async () => {
+      const loginScreen = document.getElementById('loginScreen');
+      const loadingEl = document.createElement('div');
+      loadingEl.id = 'fb-loading';
+      loadingEl.style.cssText = 'position:fixed;inset:0;background:#09090B;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:12px;';
+      loadingEl.innerHTML = '<div style="width:36px;height:36px;border:3px solid #1E293B;border-top-color:#7C3AED;border-radius:50%;animation:spin 0.7s linear infinite"></div><div style="color:#475569;font-family:DM Sans,sans-serif;font-size:13px;">Conectando…</div>';
+      document.body.appendChild(loadingEl);
+
+      const state = await loadState();
+      personas     = state.personas    || [];
+      asignaciones = state.asignaciones || [];
+      adminPass    = state.adminPass   || 'admin123';
+      tareas       = state.tareas;
+      if (!tareas || !tareas.length) tareas = DEFAULT_TAREAS.map(t => ({...t}));
+
+      loadingEl.remove();
+      initApp();
+    })();
+  </script>
+</body>
+</html>
