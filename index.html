@@ -2648,6 +2648,23 @@
     updateClock();
     setInterval(updateClock, 1000);
 
+    // Refresco automático de estados (pendiente→en-curso→terminada).
+    // Se sincroniza al próximo minuto exacto y luego dispara cada 60 s.
+    function startRenderTicker() {
+      const tick = () => {
+        if (currentSession?.type === 'admin') {
+          const enHistorial = document.getElementById('tabHistorial')?.classList.contains('active');
+          if (!enHistorial) renderAll();
+        } else if (currentSession?.type === 'employee') {
+          renderEmployeeApp(currentSession.personaId);
+        }
+      };
+      const now = new Date();
+      const msToNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds() + 50;
+      setTimeout(() => { tick(); setInterval(tick, 60000); }, msToNextMinute);
+    }
+    startRenderTicker();
+
     // Carga inicial + escucha en tiempo real
     (async () => {
       const loadingEl = document.createElement('div');
