@@ -1221,6 +1221,118 @@
       .view-tab { padding: 4px 10px; font-size: 11px; }
       .admin-logout .logout-label { display: none; }
     }
+
+    /* ══ BOARD VIEW (TV) ══════════════════════════════════════ */
+    #boardView {
+      display: none; position: fixed; inset: 0;
+      background: #09090B; z-index: 500;
+      flex-direction: column; overflow: hidden;
+    }
+    #boardView.show { display: flex; }
+
+    .board-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 28px; background: #0F172A;
+      border-bottom: 1px solid #1E293B; flex-shrink: 0;
+    }
+
+    .board-brand {
+      font-family: 'Syne', sans-serif; font-size: 20px;
+      font-weight: 800; color: white; flex-shrink: 0;
+    }
+    .board-brand span { color: #A78BFA; }
+
+    .board-hstats { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .board-hstat {
+      background: #1E293B; border-radius: 20px;
+      padding: 5px 13px; font-size: 12px; color: #94A3B8; white-space: nowrap;
+    }
+    .board-hstat strong { color: white; }
+
+    .board-clock {
+      font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 700;
+      color: #E2E8F0; letter-spacing: -1px; margin-left: auto; flex-shrink: 0;
+    }
+
+    .board-date { font-size: 12px; color: #475569; text-transform: capitalize; flex-shrink: 0; }
+
+    .board-btn {
+      background: none; border: 1px solid #1E293B; color: #475569;
+      cursor: pointer; padding: 6px 11px; border-radius: 7px; flex-shrink: 0;
+      font-family: 'DM Sans', sans-serif; font-size: 11px;
+      display: flex; align-items: center; gap: 5px; transition: all 0.13s;
+    }
+    .board-btn:hover { background: #1E293B; color: #94A3B8; }
+
+    .board-grid-wrap { flex: 1; overflow-y: auto; padding: 20px 24px; }
+
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .board-card {
+      background: #0F172A; border: 1px solid #1E293B;
+      border-left: 5px solid #1E293B;
+      border-radius: 14px; padding: 18px 18px 15px;
+      transition: box-shadow 0.18s;
+    }
+
+    .board-card.bc-en-curso  { border-left-color: #D97706; background: #100e03; }
+    .board-card.bc-pendiente { border-left-color: #2563EB; background: #040c1c; }
+    .board-card.bc-terminada { border-left-color: #22C55E; opacity: 0.65; }
+    .board-card.bc-libre     { border-left-color: #1E293B; opacity: 0.38; }
+
+    .bc-top { display: flex; align-items: center; gap: 10px; margin-bottom: 11px; }
+
+    .bc-icon { font-size: 30px; flex-shrink: 0; }
+
+    .bc-name {
+      font-family: 'Syne', sans-serif; font-size: 18px;
+      font-weight: 700; color: #F1F5F9; line-height: 1.2; flex: 1;
+    }
+
+    .bc-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.2px;
+      padding: 4px 11px; border-radius: 20px; margin-bottom: 12px;
+    }
+    .bc-badge-curso   { background: rgba(217,119,6,0.2);  color: #FCD34D; border: 1px solid rgba(217,119,6,0.4);  }
+    .bc-badge-pending { background: rgba(37,99,235,0.2);  color: #93C5FD; border: 1px solid rgba(37,99,235,0.4);  }
+    .bc-badge-done    { background: rgba(34,197,94,0.15); color: #86EFAC; border: 1px solid rgba(34,197,94,0.3);  }
+    .bc-badge-libre   { background: rgba(255,255,255,0.04); color: #334155; border: 1px solid #1E293B; }
+
+    @keyframes pulse-curso {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(217,119,6,0.5); }
+      50%       { box-shadow: 0 0 0 7px rgba(217,119,6,0); }
+    }
+    .bc-badge-curso { animation: pulse-curso 2s ease-in-out infinite; }
+
+    .bc-persons { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+
+    .bc-person { display: flex; align-items: center; gap: 10px; }
+
+    .bc-av {
+      width: 34px; height: 34px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; color: white; flex-shrink: 0;
+    }
+
+    .bc-pname { font-size: 15px; font-weight: 600; color: #CBD5E1; }
+
+    .bc-time {
+      font-size: 13px; color: #475569;
+      display: flex; align-items: center; gap: 5px; margin-bottom: 9px;
+    }
+
+    .bc-bar { height: 7px; background: #1E293B; border-radius: 4px; overflow: hidden; margin-bottom: 7px; }
+    .bc-bar-fill { height: 100%; border-radius: 4px; }
+
+    .bc-remaining { font-size: 13px; color: #F59E0B; font-weight: 700; }
+
+    .bc-more { font-size: 11px; color: #475569; margin-top: 2px; }
   </style>
 </head>
 <body>
@@ -1296,6 +1408,10 @@
           <button class="view-tab" id="tabHistorial" onclick="switchView('historial')">📋 Historial</button>
         </div>
         <div id="statsRow"></div>
+        <button class="btn btn-ghost" onclick="openBoard()" style="flex-shrink:0;padding:5px 12px;font-size:11px;gap:5px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Tablero
+        </button>
         <button class="admin-logout" onclick="doLogout()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           <span class="logout-label">Salir</span>
@@ -1501,6 +1617,24 @@
     </div>
   </div>
 
+  <!-- ══ BOARD VIEW (TV) ══════════════════════════════════════ -->
+  <div id="boardView">
+    <div class="board-header">
+      <div class="board-brand">Task<span>Flow</span></div>
+      <div class="board-hstats" id="boardStats"></div>
+      <div class="board-clock" id="boardClock">--:--:--</div>
+      <div class="board-date" id="boardDate"></div>
+      <button class="board-btn" onclick="toggleBoardFullscreen()" title="Pantalla completa">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        Pantalla completa
+      </button>
+      <button class="board-btn" onclick="closeBoard()">✕ Cerrar</button>
+    </div>
+    <div class="board-grid-wrap">
+      <div class="board-grid" id="boardGrid"></div>
+    </div>
+  </div>
+
   <div id="toast"></div>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -1669,10 +1803,13 @@
       const hh = String(n.getHours()).padStart(2,'0');
       const mm = String(n.getMinutes()).padStart(2,'0');
       const ss = String(n.getSeconds()).padStart(2,'0');
-      document.getElementById('clockTime').textContent = `${hh}:${mm}:${ss}`;
+      const timeStr = `${hh}:${mm}:${ss}`;
+      document.getElementById('clockTime').textContent = timeStr;
       document.getElementById('clockDate').textContent = n.toLocaleDateString('es-CO',{
         weekday:'long', day:'numeric', month:'long'
       });
+      const bc = document.getElementById('boardClock');
+      if (bc) bc.textContent = timeStr;
     }
 
     // ══ COLOR PICKER ════════════════════════════════════════════
@@ -2644,6 +2781,129 @@
       }
     }
 
+    // ══ BOARD VIEW ═══════════════════════════════════════════════
+    function openBoard() {
+      document.getElementById('boardView').classList.add('show');
+      renderBoard();
+    }
+
+    function closeBoard() {
+      document.getElementById('boardView').classList.remove('show');
+      if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+    }
+
+    function toggleBoardFullscreen() {
+      if (!document.fullscreenElement) {
+        document.getElementById('boardView').requestFullscreen().catch(()=>{});
+      } else {
+        document.exitFullscreen().catch(()=>{});
+      }
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !document.fullscreenElement) {
+        if (document.getElementById('boardView').classList.contains('show')) closeBoard();
+      }
+    });
+
+    function renderBoard() {
+      const boardEl = document.getElementById('boardView');
+      if (!boardEl.classList.contains('show')) return;
+
+      const hoy = todayStr();
+
+      // Stats header
+      const ocupados = personas.filter(p => personaBusy(p.id)).length;
+      const enCursoN = asignaciones.filter(a => a.fecha === hoy && asigStatus(a) === 'en-curso').length;
+      document.getElementById('boardStats').innerHTML = `
+        <div class="board-hstat">👥 <strong>${personas.length}</strong> personas</div>
+        <div class="board-hstat">🟠 <strong>${ocupados}</strong> ocupados</div>
+        <div class="board-hstat">🟢 <strong>${personas.length - ocupados}</strong> libres</div>
+        <div class="board-hstat">⚡ <strong>${enCursoN}</strong> en curso</div>`;
+      document.getElementById('boardDate').textContent = new Date().toLocaleDateString('es-CO',{
+        weekday:'long', day:'numeric', month:'long'
+      });
+
+      // Build card data per task
+      const cards = tareas.map(t => {
+        const all = asignaciones.filter(a => a.tarea === t.id && a.fecha === hoy);
+        const activos  = all.filter(a => asigStatus(a) === 'en-curso');
+        const proximos = all.filter(a => asigStatus(a) === 'pendiente')
+                            .sort((a,b) => toMin(a.horaInicio) - toMin(b.horaInicio));
+        const hechos   = all.filter(a => asigStatus(a) === 'terminada');
+
+        let st, display, refAsig;
+        if (activos.length)  { st = 'en-curso';  display = activos;  refAsig = activos[0]; }
+        else if (proximos.length) { st = 'pendiente'; display = [proximos[0]]; refAsig = proximos[0]; }
+        else if (hechos.length)   { st = 'terminada'; display = hechos; refAsig = hechos[0]; }
+        else                      { st = 'libre';     display = [];    refAsig = null; }
+
+        return { t, st, display, refAsig };
+      }).sort((a, b) => {
+        const ord = { 'en-curso':0, 'pendiente':1, 'terminada':2, 'libre':3 };
+        return ord[a.st] - ord[b.st];
+      });
+
+      document.getElementById('boardGrid').innerHTML = cards.map(({ t, st, display, refAsig }) => {
+        if (st === 'libre') {
+          return `
+            <div class="board-card bc-libre">
+              <div class="bc-top">
+                <div class="bc-icon">${t.icon}</div>
+                <div class="bc-name">${esc(t.nombre)}</div>
+              </div>
+              <span class="bc-badge bc-badge-libre">🟢 Libre</span>
+            </div>`;
+        }
+
+        const badge = st === 'en-curso'
+          ? `<span class="bc-badge bc-badge-curso">🟠 En curso</span>`
+          : st === 'pendiente'
+          ? `<span class="bc-badge bc-badge-pending">🔵 Próximo</span>`
+          : `<span class="bc-badge bc-badge-done">✅ Completado</span>`;
+
+        const MAX = 3;
+        const shown  = display.slice(0, MAX);
+        const extras = display.length - MAX;
+        const personsHtml = shown.map(a => {
+          const p = personas.find(x => x.id === a.personaId);
+          if (!p) return '';
+          return `<div class="bc-person">
+            <div class="bc-av" style="background:${p.color}">${ini(p.nombre)}</div>
+            <span class="bc-pname">${esc(p.nombre)}</span>
+          </div>`;
+        }).join('');
+
+        const pct = st === 'en-curso'
+          ? progressPct(refAsig.horaInicio, refAsig.horaFin)
+          : st === 'terminada' ? 100 : 0;
+        const barColor = st === 'en-curso' ? '#D97706' : '#22C55E';
+        const rem = st === 'en-curso' ? timeRemaining(refAsig.horaFin) : null;
+
+        return `
+          <div class="board-card bc-${st}">
+            <div class="bc-top">
+              <div class="bc-icon">${t.icon}</div>
+              <div class="bc-name">${esc(t.nombre)}</div>
+            </div>
+            ${badge}
+            <div class="bc-persons">
+              ${personsHtml}
+              ${extras > 0 ? `<div class="bc-more">+${extras} más</div>` : ''}
+            </div>
+            <div class="bc-time">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              ${fmt(refAsig.horaInicio)} → ${fmt(refAsig.horaFin)}
+            </div>
+            ${st !== 'pendiente' ? `
+              <div class="bc-bar">
+                <div class="bc-bar-fill" style="width:${pct.toFixed(1)}%;background:${barColor};"></div>
+              </div>` : ''}
+            ${rem ? `<div class="bc-remaining">⏱ ${rem}</div>` : ''}
+          </div>`;
+      }).join('');
+    }
+
     // ══ ARRANQUE Y TICKER ════════════════════════════════════════
     updateClock();
     setInterval(updateClock, 1000);
@@ -2658,6 +2918,7 @@
         } else if (currentSession?.type === 'employee') {
           renderEmployeeApp(currentSession.personaId);
         }
+        renderBoard();
       };
       const now = new Date();
       const msToNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds() + 50;
@@ -2702,6 +2963,7 @@
         } else if (currentSession?.type === 'employee') {
           renderEmployeeApp(currentSession.personaId);
         }
+        renderBoard();
       });
     })();
   </script>
