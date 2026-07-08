@@ -331,7 +331,7 @@
     }
 
     .hist-row {
-      display: flex; align-items: center; gap: 10px;
+      display: flex; flex-direction: column; align-items: stretch;
       padding: 10px 14px; border-bottom: 1px solid var(--border);
       transition: background 0.12s;
     }
@@ -424,6 +424,13 @@
 
     .hist-row-date {
       font-size: 11px; color: var(--text-3); flex-shrink: 0; width: 72px;
+    }
+
+    .hist-row-body { display: flex; align-items: center; gap: 10px; width: 100%; }
+
+    .hist-row-detalle {
+      font-size: 11px; color: var(--text-2); font-style: italic;
+      line-height: 1.4; margin-top: 3px; padding-left: 38px;
     }
 
     /* Logout admin button in topbar */
@@ -2529,10 +2536,15 @@
       return `${m}m`;
     }
 
+    function duracionMin(a) {
+      const s = toMin(a.horaInicio), e = toMin(a.horaFin);
+      return s > e ? (1440 - s) + e : Math.max(0, e - s);
+    }
+
     function histRow(a, showTask) {
       const p   = personas.find(x => x.id === a.personaId);
       const t   = tareas.find(x => x.id === a.tarea);
-      const dur = Math.max(0, toMin(a.horaFin) - toMin(a.horaInicio));
+      const dur = duracionMin(a);
       const st  = asigStatus(a);
       const badge = st === 'en-curso'
         ? `<span class="hist-badge hist-badge-curso">🟠 En curso</span>`
@@ -2551,12 +2563,15 @@
 
       return `
         <div class="hist-row ${st==='en-curso'?'hist-row-active':''}">
-          <div class="hist-row-av" style="background:${p?.color||'#999'}">${ini(p?.nombre||'?')}</div>
-          <div class="hist-row-person">${esc(p?.nombre||'Sin nombre')}</div>
-          ${taskCol}${dateCol}
-          <div class="hist-row-time">${fmt(a.horaInicio)} → ${fmt(a.horaFin)}</div>
-          <div class="hist-duration">${formatDur(dur)}</div>
-          ${badge}
+          <div class="hist-row-body">
+            <div class="hist-row-av" style="background:${p?.color||'#999'}">${ini(p?.nombre||'?')}</div>
+            <div class="hist-row-person">${esc(p?.nombre||'Sin nombre')}</div>
+            ${taskCol}${dateCol}
+            <div class="hist-row-time">${fmt(a.horaInicio)} → ${fmt(a.horaFin)}</div>
+            <div class="hist-duration">${formatDur(dur)}</div>
+            ${badge}
+          </div>
+          ${a.detalle ? `<div class="hist-row-detalle">${esc(a.detalle)}</div>` : ''}
         </div>`;
     }
 
@@ -2598,7 +2613,7 @@
         </div>`;
 
       // ── Resumen general ──
-      const totalMin = list.reduce((s,a) => s + Math.max(0, toMin(a.horaFin)-toMin(a.horaInicio)), 0);
+      const totalMin = list.reduce((s,a) => s + duracionMin(a), 0);
       const dias     = new Set(list.map(a => a.fecha)).size;
       document.getElementById('histSummary').innerHTML = list.length ? `
         <div class="hist-summary">
@@ -2625,8 +2640,8 @@
 
         // Ordenar tareas por tiempo total descendente
         const tareasSorted = Object.keys(byTarea).sort((a,b) => {
-          const minA = byTarea[a].reduce((s,x)=>s+Math.max(0,toMin(x.horaFin)-toMin(x.horaInicio)),0);
-          const minB = byTarea[b].reduce((s,x)=>s+Math.max(0,toMin(x.horaFin)-toMin(x.horaInicio)),0);
+          const minA = byTarea[a].reduce((s,x)=>s+duracionMin(x),0);
+          const minB = byTarea[b].reduce((s,x)=>s+duracionMin(x),0);
           return minB - minA;
         });
 
@@ -2634,7 +2649,7 @@
         tareasSorted.forEach(tareaId => {
           const rows   = byTarea[tareaId];
           const t      = tareas.find(x => x.id === tareaId);
-          const tarMin = rows.reduce((s,a)=>s+Math.max(0,toMin(a.horaFin)-toMin(a.horaInicio)),0);
+          const tarMin = rows.reduce((s,a)=>s+duracionMin(a),0);
           const veces  = rows.length;
 
           html += `
@@ -2664,7 +2679,7 @@
 
       Object.keys(byDate).sort((a,b)=>b.localeCompare(a)).forEach(fecha => {
         const rows    = byDate[fecha];
-        const dayMin  = rows.reduce((s,a)=>s+Math.max(0,toMin(a.horaFin)-toMin(a.horaInicio)),0);
+        const dayMin  = rows.reduce((s,a)=>s+duracionMin(a),0);
         const rawDate = new Date(fecha + 'T12:00:00');
         const label   = fecha === today
           ? 'Hoy — ' + rawDate.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'})
