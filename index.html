@@ -4,19 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TaskFlow — Café</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:       #F1F5F9;
-      --surface:  #FFFFFF;
-      --border:   #E2E8F0;
-      --text:     #0F172A;
-      --text-2:   #64748B;
-      --text-3:   #94A3B8;
-      --sidebar:  #0F172A;
-      --accent:   #7C3AED;
+      --bg:       #F7F1E7;
+      --surface:  #FFFCF7;
+      --border:   #E6DCC8;
+      --text:     #241811;
+      --text-2:   #7C6A57;
+      --text-3:   #A99783;
+      --sidebar:  #1E140C;
+      --accent:   #9A3412;
       --green:    #16A34A;
       --amber:    #D97706;
       --blue:     #2563EB;
@@ -36,10 +36,10 @@
     /* ══ LOGIN ═════════════════════════════════════════════════ */
     #loginScreen {
       width: 100%; height: 100vh;
-      background: #09090B;
+      background: #0C0705;
       background-image:
-        radial-gradient(ellipse at 20% 50%, rgba(124,58,237,0.15) 0%, transparent 55%),
-        radial-gradient(ellipse at 85% 20%, rgba(37,99,235,0.1) 0%, transparent 50%);
+        radial-gradient(ellipse at 20% 50%, rgba(154,52,18,0.20) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 20%, rgba(217,119,6,0.12) 0%, transparent 50%);
       display: flex; align-items: center; justify-content: center;
       padding: 16px;
     }
@@ -54,7 +54,7 @@
     }
 
     .login-header {
-      background: linear-gradient(135deg, #1E1B4B 0%, #312E81 60%, #4C1D95 100%);
+      background: linear-gradient(135deg, #2B1608 0%, #4A2410 55%, #7C2D12 100%);
       padding: 32px 32px 28px;
       position: relative; overflow: hidden;
     }
@@ -62,26 +62,26 @@
     .login-header::before {
       content: ''; position: absolute;
       width: 220px; height: 220px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(167,139,250,0.25) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(232,176,116,0.28) 0%, transparent 70%);
       bottom: -80px; right: -60px; pointer-events: none;
     }
 
     .login-header::after {
       content: ''; position: absolute;
       width: 120px; height: 120px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(154,52,18,0.35) 0%, transparent 70%);
       top: -30px; left: -30px; pointer-events: none;
     }
 
     .login-logo {
-      font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; color: white;
+      font-family: 'Fraunces', serif; font-size: 30px; font-weight: 800; color: white;
       margin-bottom: 4px; letter-spacing: -0.5px; position: relative; z-index: 1;
     }
 
-    .login-logo span { color: #A78BFA; }
+    .login-logo span { color: #E8B074; }
 
     .login-subtitle {
-      font-size: 11px; color: rgba(167,139,250,0.5);
+      font-size: 11px; color: rgba(232,176,116,0.55);
       letter-spacing: 0.8px; text-transform: uppercase;
       font-weight: 600; position: relative; z-index: 1;
     }
@@ -102,7 +102,7 @@
 
     .login-input:focus {
       border-color: var(--accent); background: white;
-      box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+      box-shadow: 0 0 0 3px rgba(154,52,18,0.12);
     }
 
     .login-btn {
@@ -110,25 +110,25 @@
       border-radius: var(--rs); padding: 12px;
       font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700;
       cursor: pointer; transition: all 0.15s; margin-top: 4px;
-      box-shadow: 0 4px 16px rgba(124,58,237,0.4);
+      box-shadow: 0 4px 16px rgba(154,52,18,0.38);
       letter-spacing: 0.3px;
     }
 
     .login-btn:hover {
-      background: #6D28D9; transform: translateY(-1px);
-      box-shadow: 0 8px 24px rgba(124,58,237,0.5);
+      background: #7C2D12; transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(154,52,18,0.48);
     }
 
     .login-board-btn {
-      width: 100%; background: transparent; color: #7C3AED;
-      border: 1.5px solid rgba(124,58,237,0.3); border-radius: var(--rs);
+      width: 100%; background: transparent; color: #9A3412;
+      border: 1.5px solid rgba(154,52,18,0.32); border-radius: var(--rs);
       padding: 10px; font-family: 'DM Sans', sans-serif; font-size: 12px;
       font-weight: 600; cursor: pointer; margin-top: 10px;
       display: flex; align-items: center; justify-content: center; gap: 7px;
       transition: all 0.15s; letter-spacing: 0.2px;
     }
     .login-board-btn:hover {
-      background: rgba(124,58,237,0.07); border-color: #7C3AED;
+      background: rgba(154,52,18,0.08); border-color: #9A3412;
     }
 
     .login-footer {
@@ -159,7 +159,7 @@
       position: relative; z-index: 10;
     }
 
-    .emp-brand { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--text); }
+    .emp-brand { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 800; color: var(--text); }
     .emp-brand span { color: var(--accent); }
 
     .emp-user-pill { display: flex; align-items: center; gap: 9px; }
@@ -189,7 +189,7 @@
     .emp-greeting { font-size: 11px; color: var(--text-3); margin-bottom: 2px; }
 
     .emp-date-title {
-      font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700;
+      font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700;
       margin-bottom: 2px;
     }
 
@@ -197,7 +197,7 @@
 
     .emp-task-card {
       background: white; border: 1px solid var(--border);
-      border-left: 4px solid #E2E8F0;
+      border-left: 4px solid #E6DCC8;
       border-radius: var(--r); padding: 16px 16px 14px;
       margin-bottom: 10px; position: relative; overflow: hidden;
       transition: box-shadow 0.15s, transform 0.13s;
@@ -216,7 +216,7 @@
     .emp-tc-icon { font-size: 22px; flex-shrink: 0; }
 
     .emp-tc-name {
-      font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; flex: 1;
+      font-family: 'Fraunces', serif; font-size: 15px; font-weight: 700; flex: 1;
     }
 
     .emp-tc-time {
@@ -286,7 +286,7 @@
     }
 
     .hist-select:focus, .hist-date-input:focus {
-      border-color: var(--accent); box-shadow: 0 0 0 2px rgba(124,58,237,0.08);
+      border-color: var(--accent); box-shadow: 0 0 0 2px rgba(154,52,18,0.09);
     }
 
     .hist-date-range { display: flex; align-items: center; gap: 6px; }
@@ -316,13 +316,13 @@
     }
 
     .hist-day-label {
-      font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+      font-family: 'Fraunces', serif; font-size: 13px; font-weight: 700;
       text-transform: capitalize;
     }
 
     .hist-day-total {
       font-size: 11px; font-weight: 700; color: var(--accent);
-      background: #EDE9FE; padding: 3px 10px; border-radius: 20px;
+      background: #FBEEE1; padding: 3px 10px; border-radius: 20px;
     }
 
     .hist-day-rows {
@@ -412,14 +412,14 @@
     .hist-task-header-info { flex: 1; }
 
     .hist-task-header-name {
-      font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+      font-family: 'Fraunces', serif; font-size: 14px; font-weight: 700;
     }
 
     .hist-task-header-sub { font-size: 11px; color: var(--text-2); margin-top: 1px; }
 
     .hist-task-header-total {
       font-size: 13px; font-weight: 700; color: var(--accent);
-      background: #EDE9FE; padding: 4px 12px; border-radius: 20px; flex-shrink: 0;
+      background: #FBEEE1; padding: 4px 12px; border-radius: 20px; flex-shrink: 0;
     }
 
     .hist-row-date {
@@ -440,43 +440,43 @@
     /* ══ SIDEBAR ══════════════════════════════════════════════ */
     #sidebar {
       width: 260px; min-width: 260px;
-      background: linear-gradient(180deg, #0F172A 0%, #0B1220 100%);
-      border-right: 1px solid #1E293B;
+      background: linear-gradient(180deg, #1E140C 0%, #150D07 100%);
+      border-right: 1px solid #2E2013;
       display: flex; flex-direction: column;
       height: 100vh; overflow: hidden;
     }
 
     .sb-brand {
       padding: 20px 16px 14px;
-      border-bottom: 1px solid #1E293B;
+      border-bottom: 1px solid #2E2013;
     }
 
     .brand {
-      font-family: 'Syne', sans-serif;
-      font-size: 21px; font-weight: 800; color: #F8FAFC;
+      font-family: 'Fraunces', serif;
+      font-size: 21px; font-weight: 800; color: #F7F1E7;
     }
 
-    .brand span { color: #A78BFA; }
+    .brand span { color: #E8B074; }
 
     .brand-sub {
-      font-size: 10px; color: #334155;
+      font-size: 10px; color: #6B5745;
       margin-top: 4px; letter-spacing: 0.5px;
     }
 
     .sb-clock {
       padding: 14px 16px 12px;
-      border-bottom: 1px solid #1E293B;
+      border-bottom: 1px solid #2E2013;
     }
 
     .clock-time {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Fraunces', serif;
       font-size: 36px; font-weight: 700;
-      color: #E2E8F0; letter-spacing: -1.5px;
+      color: #EFE3D2; letter-spacing: -1.5px;
       line-height: 1;
     }
 
     .clock-date {
-      font-size: 11px; color: #475569;
+      font-size: 11px; color: #8A7458;
       margin-top: 4px; text-transform: capitalize;
     }
 
@@ -489,19 +489,19 @@
 
     .p-folder-tab {
       display: inline-flex; align-items: center; gap: 6px;
-      background: #1E293B;
-      border: 1px solid #334155; border-bottom: none;
+      background: #2E2013;
+      border: 1px solid #4A3624; border-bottom: none;
       border-radius: 7px 7px 0 0;
       padding: 6px 14px;
       font-size: 9px; font-weight: 700;
       letter-spacing: 1.2px; text-transform: uppercase;
-      color: #475569; align-self: flex-start;
+      color: #8A7458; align-self: flex-start;
     }
 
     .p-folder-body {
       flex: 1; min-height: 0;
-      background: #0B1220;
-      border: 1px solid #1E293B;
+      background: #150D07;
+      border: 1px solid #2E2013;
       border-radius: 0 8px 8px 8px;
       display: flex; flex-direction: column;
       overflow: hidden;
@@ -512,11 +512,11 @@
     }
 
     #peopleList::-webkit-scrollbar { width: 2px; }
-    #peopleList::-webkit-scrollbar-thumb { background: #1E293B; }
+    #peopleList::-webkit-scrollbar-thumb { background: #2E2013; }
 
     .p-folder-foot {
       padding: 6px 6px 7px;
-      border-top: 1px solid #1E293B;
+      border-top: 1px solid #2E2013;
       flex-shrink: 0;
     }
 
@@ -531,7 +531,7 @@
     }
 
     .p-card:last-child { margin-bottom: 0; }
-    .p-card:hover { background: #1E293B; }
+    .p-card:hover { background: #2E2013; }
 
     .p-av {
       width: 34px; height: 34px; border-radius: 50%;
@@ -543,36 +543,36 @@
     .p-status-dot {
       position: absolute; bottom: 0; right: 0;
       width: 9px; height: 9px; border-radius: 50%;
-      border: 1.5px solid #0B1220;
+      border: 1.5px solid #150D07;
     }
 
     .p-info { flex: 1; min-width: 0; }
 
     .p-name {
-      font-size: 12px; font-weight: 600; color: #CBD5E1;
+      font-size: 12px; font-weight: 600; color: #E8DCC9;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
     .p-task-info {
-      font-size: 10px; color: #475569;
+      font-size: 10px; color: #8A7458;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       margin-top: 1px;
     }
 
     .p-task-info.busy { color: #F59E0B; }
-    .p-task-info.free { color: #475569; }
+    .p-task-info.free { color: #8A7458; }
 
     .btn-add-p {
       width: 100%;
-      background: transparent; border: 1px dashed #1E293B;
-      color: #475569; font-family: 'DM Sans', sans-serif;
+      background: transparent; border: 1px dashed #4A3624;
+      color: #8A7458; font-family: 'DM Sans', sans-serif;
       font-size: 11px; padding: 8px; border-radius: var(--rs);
       cursor: pointer; display: flex; align-items: center;
       justify-content: center; gap: 6px;
       transition: all 0.15s;
     }
 
-    .btn-add-p:hover { background: #1E293B; color: #94A3B8; border-color: #334155; }
+    .btn-add-p:hover { background: #2E2013; color: #C9B79E; border-color: #4A3624; }
 
     /* ══ MAIN ══════════════════════════════════════════════════ */
     #main {
@@ -591,7 +591,7 @@
     }
 
     .page-title {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Fraunces', serif;
       font-size: 16px; font-weight: 700;
       letter-spacing: -0.3px; flex-shrink: 0;
     }
@@ -638,7 +638,7 @@
     .task-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-left: 4px solid #E2E8F0;
+      border-left: 4px solid #E6DCC8;
       border-radius: var(--r);
       padding: 16px 14px 13px;
       cursor: pointer;
@@ -711,7 +711,7 @@
       font-size: 16px; cursor: pointer; transition: all 0.12s;
       user-select: none;
     }
-    .icon-opt:hover { background: #EDE9FE; border-color: var(--accent); transform: scale(1.1); }
+    .icon-opt:hover { background: #FBEEE1; border-color: var(--accent); transform: scale(1.1); }
 
     .tc-progress-fill.shimmer {
       background: linear-gradient(90deg, var(--amber), #F59E0B, var(--amber)) !important;
@@ -796,7 +796,7 @@
       display: flex; align-items: center; justify-content: center; gap: 5px;
     }
 
-    .tc-assign-btn:hover { background: #EDE9FE; color: var(--accent); border-color: var(--accent); }
+    .tc-assign-btn:hover { background: #FBEEE1; color: var(--accent); border-color: var(--accent); }
 
     /* ══ MODAL ═════════════════════════════════════════════════ */
     .overlay {
@@ -834,7 +834,7 @@
     .modal-icon { font-size: 22px; margin-right: 8px; }
 
     .modal-title {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Fraunces', serif;
       font-size: 17px; font-weight: 700; flex: 1;
     }
 
@@ -903,16 +903,16 @@
       display: flex; transition: all 0.1s; flex-shrink: 0;
     }
 
-    .asig-row-edit:hover { color: var(--accent); background: #EDE9FE; }
+    .asig-row-edit:hover { color: var(--accent); background: #FBEEE1; }
 
     .asig-row.editing {
       border-color: var(--accent);
-      background: #F5F3FF;
+      background: #FBEEE1;
     }
 
     .edit-banner {
       display: flex; align-items: center; gap: 6px;
-      background: #EDE9FE; border: 1px solid rgba(124,58,237,0.25);
+      background: #FBEEE1; border: 1px solid rgba(154,52,18,0.25);
       border-radius: var(--rs); padding: 7px 10px;
       font-size: 11px; font-weight: 600; color: var(--accent);
       margin-bottom: 10px;
@@ -1014,8 +1014,8 @@
       cursor: pointer; transition: all 0.13s; position: relative;
     }
 
-    .pg-opt:hover:not(.disabled) { border-color: var(--accent); background: #FAFAFA; }
-    .pg-opt.sel { border-color: var(--accent); background: #EDE9FE; }
+    .pg-opt:hover:not(.disabled) { border-color: var(--accent); background: #FBF8F3; }
+    .pg-opt.sel { border-color: var(--accent); background: #FBEEE1; }
     .pg-opt.disabled { opacity: 0.45; cursor: not-allowed; }
 
     .pg-av {
@@ -1056,7 +1056,7 @@
       box-shadow: 0 2px 10px rgba(124,58,237,0.35);
     }
     .btn-primary:hover {
-      background: #6D28D9;
+      background: #7C2D12;
       box-shadow: 0 4px 16px rgba(124,58,237,0.45);
       transform: translateY(-1px);
     }
@@ -1132,18 +1132,18 @@
 
     /* Sidebar edit button on hover */
     .p-edit-btn {
-      background: none; border: none; color: #334155;
+      background: none; border: none; color: #6B5745;
       cursor: pointer; padding: 4px; border-radius: 4px;
       display: flex; opacity: 0; transition: all 0.12s; flex-shrink: 0;
     }
 
     .p-card:hover .p-edit-btn { opacity: 1; }
-    .p-edit-btn:hover { color: #A78BFA; background: #1E293B; }
+    .p-edit-btn:hover { color: #E8B074; background: #2E2013; }
 
     /* Toast */
     #toast {
       position: fixed; bottom: 22px; right: 22px;
-      background: #111; color: white;
+      background: #1A120B; color: white;
       padding: 10px 16px; border-radius: 10px; font-size: 13px;
       z-index: 9999; transform: translateY(80px);
       transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1155,7 +1155,7 @@
     #toast.show { transform: translateY(0); }
 
     ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-thumb { background: #DDD; border-radius: 2px; }
+    ::-webkit-scrollbar-thumb { background: #D9CBB0; border-radius: 2px; }
 
     /* ══ RESPONSIVE ════════════════════════════════════════════ */
     .sidebar-toggle {
@@ -1237,45 +1237,45 @@
     /* ══ BOARD VIEW (TV) ══════════════════════════════════════ */
     #boardView {
       display: none; position: fixed; inset: 0;
-      background: #09090B; z-index: 500;
+      background: #0C0705; z-index: 500;
       flex-direction: column; overflow: hidden;
     }
     #boardView.show { display: flex; }
 
     .board-header {
       display: flex; align-items: center; gap: 14px;
-      padding: 14px 28px; background: #0F172A;
-      border-bottom: 1px solid #1E293B; flex-shrink: 0;
+      padding: 14px 28px; background: #1E140C;
+      border-bottom: 1px solid #2E2013; flex-shrink: 0;
     }
 
     .board-brand {
-      font-family: 'Syne', sans-serif; font-size: 20px;
+      font-family: 'Fraunces', serif; font-size: 20px;
       font-weight: 800; color: white; flex-shrink: 0;
     }
-    .board-brand span { color: #A78BFA; }
+    .board-brand span { color: #E8B074; }
 
     .board-hstats { display: flex; gap: 8px; flex-wrap: wrap; }
 
     .board-hstat {
-      background: #1E293B; border-radius: 20px;
-      padding: 5px 13px; font-size: 12px; color: #94A3B8; white-space: nowrap;
+      background: #2E2013; border-radius: 20px;
+      padding: 5px 13px; font-size: 12px; color: #C9B79E; white-space: nowrap;
     }
     .board-hstat strong { color: white; }
 
     .board-clock {
-      font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 700;
-      color: #E2E8F0; letter-spacing: -1px; margin-left: auto; flex-shrink: 0;
+      font-family: 'Fraunces', serif; font-size: 30px; font-weight: 700;
+      color: #EFE3D2; letter-spacing: -1px; margin-left: auto; flex-shrink: 0;
     }
 
-    .board-date { font-size: 12px; color: #475569; text-transform: capitalize; flex-shrink: 0; }
+    .board-date { font-size: 12px; color: #8A7458; text-transform: capitalize; flex-shrink: 0; }
 
     .board-btn {
-      background: none; border: 1px solid #1E293B; color: #475569;
+      background: none; border: 1px solid #4A3624; color: #8A7458;
       cursor: pointer; padding: 6px 11px; border-radius: 7px; flex-shrink: 0;
       font-family: 'DM Sans', sans-serif; font-size: 11px;
       display: flex; align-items: center; gap: 5px; transition: all 0.13s;
     }
-    .board-btn:hover { background: #1E293B; color: #94A3B8; }
+    .board-btn:hover { background: #2E2013; color: #C9B79E; }
 
     .board-grid-wrap { flex: 1; overflow-y: auto; padding: 20px 24px; }
 
@@ -1286,8 +1286,8 @@
     }
 
     .board-card {
-      background: #0F172A; border: 1px solid #1E293B;
-      border-left: 5px solid #1E293B;
+      background: #1E140C; border: 1px solid #2E2013;
+      border-left: 5px solid #2E2013;
       border-radius: 14px; padding: 18px 18px 15px;
       transition: box-shadow 0.18s;
     }
@@ -1295,15 +1295,15 @@
     .board-card.bc-en-curso  { border-left-color: #D97706; background: #100e03; }
     .board-card.bc-pendiente { border-left-color: #2563EB; background: #040c1c; }
     .board-card.bc-terminada { border-left-color: #22C55E; opacity: 0.65; }
-    .board-card.bc-libre     { border-left-color: #1E293B; opacity: 0.38; }
+    .board-card.bc-libre     { border-left-color: #2E2013; opacity: 0.38; }
 
     .bc-top { display: flex; align-items: center; gap: 10px; margin-bottom: 11px; }
 
     .bc-icon { font-size: 30px; flex-shrink: 0; }
 
     .bc-name {
-      font-family: 'Syne', sans-serif; font-size: 18px;
-      font-weight: 700; color: #F1F5F9; line-height: 1.2; flex: 1;
+      font-family: 'Fraunces', serif; font-size: 18px;
+      font-weight: 700; color: #F3E9DD; line-height: 1.2; flex: 1;
     }
 
     .bc-badge {
@@ -1314,7 +1314,7 @@
     .bc-badge-curso   { background: rgba(217,119,6,0.2);  color: #FCD34D; border: 1px solid rgba(217,119,6,0.4);  }
     .bc-badge-pending { background: rgba(37,99,235,0.2);  color: #93C5FD; border: 1px solid rgba(37,99,235,0.4);  }
     .bc-badge-done    { background: rgba(34,197,94,0.15); color: #86EFAC; border: 1px solid rgba(34,197,94,0.3);  }
-    .bc-badge-libre   { background: rgba(255,255,255,0.04); color: #334155; border: 1px solid #1E293B; }
+    .bc-badge-libre   { background: rgba(255,255,255,0.04); color: #6B5745; border: 1px solid #2E2013; }
 
     @keyframes pulse-curso {
       0%, 100% { box-shadow: 0 0 0 0 rgba(217,119,6,0.5); }
@@ -1332,21 +1332,21 @@
       font-size: 12px; font-weight: 800; color: white; flex-shrink: 0;
     }
 
-    .bc-pname { font-size: 15px; font-weight: 600; color: #CBD5E1; }
+    .bc-pname { font-size: 15px; font-weight: 600; color: #E8DCC9; }
     .bc-person-info { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
-    .bc-pdetalle { font-size: 12px; color: #64748B; line-height: 1.35; }
+    .bc-pdetalle { font-size: 12px; color: #A99783; line-height: 1.35; }
 
     .bc-time {
-      font-size: 13px; color: #475569;
+      font-size: 13px; color: #8A7458;
       display: flex; align-items: center; gap: 5px; margin-bottom: 9px;
     }
 
-    .bc-bar { height: 7px; background: #1E293B; border-radius: 4px; overflow: hidden; margin-bottom: 7px; }
+    .bc-bar { height: 7px; background: #2E2013; border-radius: 4px; overflow: hidden; margin-bottom: 7px; }
     .bc-bar-fill { height: 100%; border-radius: 4px; }
 
     .bc-remaining { font-size: 13px; color: #F59E0B; font-weight: 700; }
 
-    .bc-more { font-size: 11px; color: #475569; margin-top: 2px; }
+    .bc-more { font-size: 11px; color: #8A7458; margin-top: 2px; }
   </style>
 </head>
 <body>
@@ -1737,35 +1737,76 @@
     }
 
     function todayStr() {
-      return new Date().toISOString().split('T')[0];
+      const n = new Date();
+      return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+    }
+
+    function ayerStr() {
+      const n = new Date();
+      n.setDate(n.getDate() - 1);
+      return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+    }
+
+    // ¿Esta asignación cuenta como "de hoy"? Incluye turnos de ayer que
+    // cruzan medianoche (horaFin < horaInicio) y siguen dentro de su horario.
+    function esDeHoy(a) {
+      if (a.fecha === todayStr()) return true;
+      if (a.fecha === ayerStr()) {
+        const s = toMin(a.horaInicio), e = toMin(a.horaFin);
+        return s > e && nowMin() < e;
+      }
+      return false;
+    }
+
+    // Detecta si dos turnos se solapan, considerando turnos que cruzan medianoche
+    function turnosSeSuperponen(s_a, e_a, s_b, e_b) {
+      const a_cruza = s_a > e_a;
+      const b_cruza = s_b > e_b;
+
+      if (a_cruza && b_cruza) {
+        return true;
+      }
+      if (!a_cruza && !b_cruza) {
+        return s_a < e_b && e_a > s_b;
+      }
+      const { s: s_c, e: e_c } = a_cruza ? { s: s_a, e: e_a } : { s: s_b, e: e_b };
+      const { s: s_n, e: e_n } = a_cruza ? { s: s_b, e: e_b } : { s: s_a, e: e_a };
+      return !(s_n >= e_c && e_n <= s_c);
     }
 
     function asigStatus(a) {
-      if (a.fecha && a.fecha < todayStr()) return 'terminada';
+      const hoy = todayStr();
+      if (a.fecha && a.fecha < hoy) {
+        // Turno de ayer que cruza medianoche: puede seguir en curso.
+        if (a.fecha === ayerStr()) {
+          const s = toMin(a.horaInicio), e = toMin(a.horaFin);
+          if (s > e && nowMin() < e) return 'en-curso';
+        }
+        return 'terminada';
+      }
       const now = nowMin();
       const s = toMin(a.horaInicio);
       const e = toMin(a.horaFin);
-      if (now < s)            return 'pendiente';
-      if (now >= s && now < e) return 'en-curso';
+      const cruza = s > e;
+      if (cruza) return (now >= s || now < e) ? 'en-curso' : 'pendiente';
+      if (now < s) return 'pendiente';
+      if (now < e) return 'en-curso';
       return 'terminada';
     }
 
     // Para una tarea: dame la asignación de hoy más relevante
     function getActiveAsig(tareaId) {
-      const hoy = todayStr();
       const now = nowMin();
       const list = asignaciones
-        .filter(a => a.tarea === tareaId && a.fecha === hoy)
+        .filter(a => a.tarea === tareaId && esDeHoy(a))
+        .map(a => ({ ...a, _st: asigStatus(a) }))
         .sort((a,b) => toMin(a.horaInicio) - toMin(b.horaInicio));
 
-      const activa = list.find(a => {
-        const s = toMin(a.horaInicio), e = toMin(a.horaFin);
-        return now >= s && now < e;
-      });
-      if (activa) return { ...activa, _st:'en-curso' };
+      const activa = list.find(a => a._st === 'en-curso');
+      if (activa) return activa;
 
-      const proxima = list.find(a => toMin(a.horaInicio) > now);
-      if (proxima) return { ...proxima, _st:'pendiente' };
+      const proxima = list.find(a => a._st === 'pendiente' && toMin(a.horaInicio) > now);
+      if (proxima) return proxima;
 
       const ult = list[list.length-1];
       if (ult) return { ...ult, _st:'terminada' };
@@ -1774,28 +1815,24 @@
 
     // ¿Está ocupada la persona en este momento?
     function personaBusy(personaId) {
-      const now = nowMin(), hoy = todayStr();
-      return asignaciones.some(a =>
-        a.personaId === personaId &&
-        a.fecha === hoy &&
-        now >= toMin(a.horaInicio) &&
-        now < toMin(a.horaFin)
-      );
+      return asignaciones.some(a => a.personaId === personaId && esDeHoy(a) && asigStatus(a) === 'en-curso');
     }
 
     function personaCurTask(personaId) {
-      const now = nowMin(), hoy = todayStr();
-      return asignaciones.find(a =>
-        a.personaId === personaId &&
-        a.fecha === hoy &&
-        now >= toMin(a.horaInicio) &&
-        now < toMin(a.horaFin)
-      );
+      return asignaciones.find(a => a.personaId === personaId && esDeHoy(a) && asigStatus(a) === 'en-curso');
     }
 
     // Tiempo restante formateado
-    function timeRemaining(horaFin) {
-      const diff = toMin(horaFin) - nowMin();
+    function timeRemaining(horaInicio, horaFin) {
+      const now = nowMin();
+      const s = toMin(horaInicio), e = toMin(horaFin);
+      const cruza = s > e;
+      let diff;
+      if (cruza) {
+        diff = now >= s ? (1440 - now) + e : e - now;
+      } else {
+        diff = e - now;
+      }
       if (diff <= 0) return null;
       const h = Math.floor(diff/60), m = diff%60;
       if (h > 0) return `${h}h ${m}m restantes`;
@@ -1805,9 +1842,17 @@
     function progressPct(horaInicio, horaFin) {
       const now = nowMin();
       const s = toMin(horaInicio), e = toMin(horaFin);
-      const total = e - s;
+      const cruza = s > e;
+      let total, elapsed;
+      if (cruza) {
+        total = (1440 - s) + e;
+        elapsed = now >= s ? now - s : (1440 - s) + now;
+      } else {
+        total = e - s;
+        elapsed = now - s;
+      }
       if (total <= 0) return 100;
-      return Math.min(Math.max(((now-s)/total)*100, 0), 100);
+      return Math.min(Math.max((elapsed/total)*100, 0), 100);
     }
 
     function fmt(t) {
@@ -1854,7 +1899,7 @@
     function renderSidebar() {
       const el = document.getElementById('peopleList');
       if (!personas.length) {
-        el.innerHTML = '<div style="padding:20px 12px;text-align:center;color:#2E2E2E;font-size:11px;line-height:1.8;">Sin personal registrado.<br>Agrega el equipo.</div>';
+        el.innerHTML = '<div style="padding:20px 12px;text-align:center;color:#8A7458;font-size:11px;line-height:1.8;">Sin personal registrado.<br>Agrega el equipo.</div>';
         return;
       }
       el.innerHTML = personas.map(p => {
@@ -1862,7 +1907,7 @@
         const ct = busy ? personaCurTask(p.id) : null;
         const tarea = ct ? tareas.find(t => t.id === ct.tarea) : null;
         const dotColor = busy ? '#F59E0B' : '#22C55E';
-        const hoyCount = asignaciones.filter(a => a.personaId === p.id && a.fecha === todayStr()).length;
+        const hoyCount = asignaciones.filter(a => a.personaId === p.id && esDeHoy(a)).length;
         return `
           <div class="p-card" style="border-left-color:${p.color}66" onclick="openPersonTasks('${p.id}')">
             <div class="p-av" style="background:${p.color};box-shadow:0 0 0 2px ${p.color}44,0 2px 8px ${p.color}22">
@@ -1916,7 +1961,7 @@
           ? `<span class="tc-badge badge-pendiente">🔵 Próximo</span>`
           : `<span class="tc-badge badge-terminada">✅ Terminado</span>`;
 
-        const remaining = st==='en-curso' ? timeRemaining(asig.horaFin) : null;
+        const remaining = st==='en-curso' ? timeRemaining(asig.horaInicio, asig.horaFin) : null;
         const pct = st==='en-curso' ? progressPct(asig.horaInicio, asig.horaFin) : (st==='terminada'?100:0);
         const barColor = st==='en-curso'?'#D97706':st==='terminada'?'#22C55E':'#3B82F6';
         const fillClass = st==='en-curso' ? ' shimmer' : '';
@@ -1935,7 +1980,7 @@
             ${p ? `
               <div class="tc-person">
                 <div class="tc-av" style="background:${p.color}">${ini(p.nombre)}</div>
-                <span class="tc-pname">${esc(p.nombre.split(' ')[0])}</span>
+                <span class="tc-pname">${esc(nombreCorto(p.nombre))}</span>
               </div>
             ` : ''}
             <div class="tc-time">
@@ -1962,8 +2007,7 @@
     }
 
     function renderStats() {
-      const hoy = todayStr();
-      const asigHoy = asignaciones.filter(a => a.fecha === hoy);
+      const asigHoy = asignaciones.filter(esDeHoy);
       const enCurso = asigHoy.filter(a => asigStatus(a)==='en-curso').length;
       const libres = personas.filter(p => !personaBusy(p.id)).length;
       const ocupados = personas.filter(p => personaBusy(p.id)).length;
@@ -2078,7 +2122,7 @@
               ${ini(p.nombre)}
               <div class="pg-dot" style="background:${busy?'#F59E0B':'#22C55E'}"></div>
             </div>
-            <div class="pg-name">${esc(p.nombre.split(' ')[0])}</div>
+            <div class="pg-name">${esc(nombreCorto(p.nombre))}</div>
             <div class="pg-status ${busy?'busy':''}">${busy?'Ocupado':'Libre'}</div>
           </div>`;
       }).join('');
@@ -2142,14 +2186,14 @@
       const fecha   = document.getElementById('asigFecha').value;
       const detalle = document.getElementById('asigDetalle').value.trim();
       if (!hi || !hf) { toast('⚠️ Ingresa la hora de inicio y fin'); return; }
-      if (toMin(hi) >= toMin(hf)) { toast('⚠️ La hora de fin debe ser mayor a la de inicio'); return; }
+      if (hi === hf) { toast('⚠️ La hora de fin debe ser diferente a la de inicio'); return; }
 
       if (editAsigId) {
         // Edición: siempre una persona
         const personaId = [...selPersonIds][0];
         const cruce = asignaciones.find(a =>
           a.personaId === personaId && a.fecha === fecha && a.id !== editAsigId &&
-          toMin(a.horaInicio) < toMin(hf) && toMin(a.horaFin) > toMin(hi)
+          turnosSeSuperponen(toMin(a.horaInicio), toMin(a.horaFin), toMin(hi), toMin(hf))
         );
         if (cruce) {
           const t2 = tareas.find(x=>x.id===cruce.tarea);
@@ -2168,12 +2212,12 @@
       for (const personaId of selPersonIds) {
         const cruce = asignaciones.find(a =>
           a.personaId === personaId && a.fecha === fecha &&
-          toMin(a.horaInicio) < toMin(hf) && toMin(a.horaFin) > toMin(hi)
+          turnosSeSuperponen(toMin(a.horaInicio), toMin(a.horaFin), toMin(hi), toMin(hf))
         );
         if (cruce) {
           const p2  = personas.find(x=>x.id===personaId);
           const t2  = tareas.find(x=>x.id===cruce.tarea);
-          conflictos.push(`${p2?.nombre?.split(' ')[0]}: ya tiene "${t2?.nombre}"`);
+          conflictos.push(`${nombreCorto(p2?.nombre)}: ya tiene "${t2?.nombre}"`);
         } else {
           ok.push({ id: uid(), tarea: modalTareaId, personaId, horaInicio: hi, horaFin: hf, fecha, detalle });
         }
@@ -2214,8 +2258,7 @@
       if (!p) return;
 
       const busy = personaBusy(p.id);
-      const hoy = todayStr();
-      const totalHoy = asignaciones.filter(a => a.personaId === personId && a.fecha === hoy).length;
+      const totalHoy = asignaciones.filter(a => a.personaId === personId && esDeHoy(a)).length;
 
       const ptAv = document.getElementById('ptAvatar');
       ptAv.style.background = p.color;
@@ -2232,9 +2275,8 @@
     }
 
     function renderPersonTasks(personId) {
-      const hoy = todayStr();
       const list = asignaciones
-        .filter(a => a.personaId === personId && a.fecha === hoy)
+        .filter(a => a.personaId === personId && esDeHoy(a))
         .sort((a,b) => toMin(a.horaInicio) - toMin(b.horaInicio));
 
       const el = document.getElementById('ptTaskList');
@@ -2262,7 +2304,7 @@
           : `<span class="tc-badge badge-terminada" style="flex-shrink:0;">✅ Listo</span>`;
         const pct = st==='en-curso' ? progressPct(a.horaInicio, a.horaFin) : (st==='terminada' ? 100 : 0);
         const barColor = st==='en-curso' ? '#D97706' : '#22C55E';
-        const rem = st==='en-curso' ? timeRemaining(a.horaFin) : null;
+        const rem = st==='en-curso' ? timeRemaining(a.horaInicio, a.horaFin) : null;
 
         return `
           <div class="pt-task-row ${st==='en-curso'?'status-en-curso':''}">
@@ -2433,6 +2475,12 @@
     function ini(n) {
       if (!n) return '?';
       return n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    }
+
+    // Nombre + un apellido (primeras dos palabras del nombre completo)
+    function nombreCorto(n) {
+      if (!n) return '';
+      return n.split(' ').slice(0,2).join(' ');
     }
 
     function esc(s) {
@@ -2719,15 +2767,14 @@
       const h = new Date().getHours();
       const saludo = h < 12 ? 'Buenos días' : h < 18 ? 'Buenas tardes' : 'Buenas noches';
       document.getElementById('empGreeting').textContent = saludo + ',';
-      document.getElementById('empDateTitle').textContent = p.nombre.split(' ')[0];
+      document.getElementById('empDateTitle').textContent = nombreCorto(p.nombre);
       document.getElementById('empDateSub').textContent = new Date().toLocaleDateString('es-CO', {
         weekday:'long', day:'numeric', month:'long'
       });
 
       // Tareas
-      const hoy = todayStr();
       const list = asignaciones
-        .filter(a => a.personaId === personaId && a.fecha === hoy)
+        .filter(a => a.personaId === personaId && esDeHoy(a))
         .sort((a,b) => toMin(a.horaInicio) - toMin(b.horaInicio));
 
       const el = document.getElementById('empTaskList');
@@ -2756,7 +2803,7 @@
           : `<span class="tc-badge badge-terminada">✅ Completado</span>`;
         const pct = st==='en-curso' ? progressPct(a.horaInicio, a.horaFin) : (st==='terminada' ? 100 : 0);
         const barColor = st==='en-curso' ? '#D97706' : '#22C55E';
-        const rem = st==='en-curso' ? timeRemaining(a.horaFin) : null;
+        const rem = st==='en-curso' ? timeRemaining(a.horaInicio, a.horaFin) : null;
 
         return `
           <div class="emp-task-card ${st}">
@@ -2842,11 +2889,9 @@
       const boardEl = document.getElementById('boardView');
       if (!boardEl.classList.contains('show')) return;
 
-      const hoy = todayStr();
-
       // Stats header
       const ocupados = personas.filter(p => personaBusy(p.id)).length;
-      const enCursoN = asignaciones.filter(a => a.fecha === hoy && asigStatus(a) === 'en-curso').length;
+      const enCursoN = asignaciones.filter(a => esDeHoy(a) && asigStatus(a) === 'en-curso').length;
       document.getElementById('boardStats').innerHTML = `
         <div class="board-hstat">👥 <strong>${personas.length}</strong> personas</div>
         <div class="board-hstat">🟠 <strong>${ocupados}</strong> ocupados</div>
@@ -2858,7 +2903,7 @@
 
       // Build card data per task
       const cards = tareas.map(t => {
-        const all = asignaciones.filter(a => a.tarea === t.id && a.fecha === hoy);
+        const all = asignaciones.filter(a => a.tarea === t.id && esDeHoy(a));
         const activos  = all.filter(a => asigStatus(a) === 'en-curso');
         const proximos = all.filter(a => asigStatus(a) === 'pendiente')
                             .sort((a,b) => toMin(a.horaInicio) - toMin(b.horaInicio));
@@ -2910,7 +2955,7 @@
           ? progressPct(refAsig.horaInicio, refAsig.horaFin)
           : st === 'terminada' ? 100 : 0;
         const barColor = st === 'en-curso' ? '#D97706' : '#22C55E';
-        const rem = st === 'en-curso' ? timeRemaining(refAsig.horaFin) : null;
+        const rem = st === 'en-curso' ? timeRemaining(refAsig.horaInicio, refAsig.horaFin) : null;
 
         return `
           <div class="board-card bc-${st}">
@@ -2961,8 +3006,8 @@
     (async () => {
       const loadingEl = document.createElement('div');
       loadingEl.id = 'fb-loading';
-      loadingEl.style.cssText = 'position:fixed;inset:0;background:#09090B;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:12px;';
-      loadingEl.innerHTML = '<div style="width:36px;height:36px;border:3px solid #1E293B;border-top-color:#7C3AED;border-radius:50%;animation:spin 0.7s linear infinite"></div><div style="color:#475569;font-family:DM Sans,sans-serif;font-size:13px;">Conectando…</div>';
+      loadingEl.style.cssText = 'position:fixed;inset:0;background:#0C0705;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:12px;';
+      loadingEl.innerHTML = '<div style="width:36px;height:36px;border:3px solid #2E2013;border-top-color:#9A3412;border-radius:50%;animation:spin 0.7s linear infinite"></div><div style="color:#8A7458;font-family:DM Sans,sans-serif;font-size:13px;">Conectando…</div>';
       document.body.appendChild(loadingEl);
 
       const state = await loadState();
